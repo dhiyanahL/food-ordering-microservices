@@ -8,12 +8,15 @@ import passport from "passport";
 import authRoutes from "../backend/src/routes/authRoutes.js";
 import userRoutes from "../backend/src/routes/userRoutes.js";
 import './config/passport.js'; // This initializes the passport strategies
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
+// Allow all origins (adjust based on your security requirements)
+app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 

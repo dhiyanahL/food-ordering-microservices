@@ -16,12 +16,17 @@ const generateToken = (user) => {
 };
 
 export const registerUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, address, phoneNumber } = req.body;
   try {
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'User already exists' });
 
-    const user = new User({ name, email, password, role });
+       // Role-based address validation
+       if ((role === 'Customer' || role === 'RestaurantAdmin') && !address) {
+        return res.status(400).json({ message: 'Address is required for Customer and RestaurantAdmin roles' });
+      }
+
+    const user = new User({ name, email, password, role, address, phoneNumber });
     await user.save();
     const token = generateToken(user);
 
