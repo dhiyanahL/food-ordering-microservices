@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -15,15 +16,32 @@ export default function RegisterForm() {
     role: "Customer",
     address: "",
   });
-
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+    }
+    if (!/^\d{10}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must be exactly 10 digits";
+    }
+    return newErrors;
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       await axios.post("http://localhost:5000/api/auth/register", formData);
       navigate("/");
@@ -82,17 +100,27 @@ export default function RegisterForm() {
             onChange={handleChange}
             className="w-full p-2 border border-softBeige rounded-lg focus:ring-2 focus:ring-oliveGreen"
           />
+          {errors.phoneNumber && <p className="text-red-600 text-sm mt-1">{errors.phoneNumber}</p>}
         </div>
         <div className="w-full">
           <label className="block text-lg mb-2 text-oliveGreen font-bold">Password</label>
+          <div className="relative">
           <input
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             required
             value={formData.password}
             onChange={handleChange}
             className="w-full p-2 border border-softBeige rounded-lg focus:ring-2 focus:ring-oliveGreen"
           />
+          <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2.5 cursor-pointer text-gray-600"
+            >
+              {showPassword ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
+            </span>
+            {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
+            </div>
         </div>
       </div>
 

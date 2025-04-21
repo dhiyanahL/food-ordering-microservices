@@ -10,6 +10,29 @@ const userSchema = new mongoose.Schema({
   facebookId: String,
   address:{type:String},
   phoneNumber:{type: String, required: true},
+  loyaltyPoints: {
+    type: Number,
+    default: 0,
+  },
+  membershipTier: {
+    type: String,
+    enum: ['Bronze', 'Silver', 'Gold'],
+    default: 'Bronze',
+  },
+
+  lastLogin: {
+    type: Date,
+    default: Date.now,
+  },
+
+  averageRatingGiven: {
+    type: Number,
+    default: 0
+  },
+  totalRatingsCount: {
+    type: Number,
+    default: 0
+  }
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

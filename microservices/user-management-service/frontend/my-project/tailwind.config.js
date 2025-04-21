@@ -7,6 +7,7 @@ export default {
       colors: {
         darkGreen: "#103713",
         oliveGreen: "#628B35",
+        lightGreen: "#A3C394",
         softBeige: "#F2EBE3",
         offWhite: "#FFFDF5",
       },
