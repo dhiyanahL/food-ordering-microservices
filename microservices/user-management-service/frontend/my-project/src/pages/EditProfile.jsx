@@ -64,8 +64,8 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] flex justify-center items-center p-6">
-      <form onSubmit={handleSubmit} className="bg-[#F2EBE3] shadow-md rounded-2xl p-8 w-full max-w-3xl text-[#103713] border-2 border-green-700">
+    <div className="min-h-screen bg-[#F2EBE3] flex justify-center items-center p-6">
+      <form onSubmit={handleSubmit} className="bg-[#FFFDF5] shadow-md rounded-2xl p-8 w-full max-w-3xl text-[#103713] border-2 border-green-700">
         {/* Profile Icon at the top */}
         <div className="text-center mb-6">
           <BsPersonCircle className="text-9xl text-[#628B35] mx-auto" />

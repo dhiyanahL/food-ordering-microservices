@@ -1,41 +1,40 @@
-import express from 'express';
-import authMiddleware from '../middleware/authMiddleware.js';
-import admin from '../middleware/authMiddleware.js';
-import {
+const express = require("express");
+const { authMiddleware, admin } = require("../middleware/authMiddleware");
+const {
   getProfile,
   editProfile,
   deleteUser,
   getUsers,
-} from '../controllers/userController.js';
-import {
+} = require("../controllers/userController");
+const {
   getLoyaltyPoints,
   addLoyaltyPoints,
   redeemLoyaltyPoints,
-  simulateOrderLoyalty
-} from "../controllers/loyaltyController.js";
-
-import { updateRating, getAverageRating } from "../controllers/ratingController.js";
+  simulateOrderLoyalty,
+} = require("../controllers/loyaltyController");
+const {
+  updateRating,
+  getAverageRating,
+} = require("../controllers/ratingController");
 
 const router = express.Router();
 
-//PROTECTED ROUTES - CUSTOMER PROFILE
-router.get('/profile', authMiddleware, getProfile);
-router.put('/edit', authMiddleware, editProfile);
-router.delete('/delete', authMiddleware, deleteUser);
+// PROTECTED ROUTES - CUSTOMER PROFILE
+router.get("/profile", authMiddleware, getProfile);
+router.put("/edit", authMiddleware, editProfile);
+router.delete("/delete", authMiddleware, deleteUser);
 
-//LOYALTY POINTS ROUTES
-router.get("/loyalty",authMiddleware , getLoyaltyPoints);
-router.post("/loyalty/add", authMiddleware, addLoyaltyPoints); //To be used by Order Component after successful order 
+// LOYALTY POINTS ROUTES
+router.get("/loyalty", authMiddleware, getLoyaltyPoints);
+router.post("/loyalty/add", authMiddleware, addLoyaltyPoints);
 router.post("/loyalty/redeem", authMiddleware, redeemLoyaltyPoints);
-
 router.post("/loyalty/simulate-order", authMiddleware, simulateOrderLoyalty);
 
-
-//RATING ORDER ROUTES
-router.post("/update-rating", authMiddleware, updateRating);  //used with order component
+// RATING ORDER ROUTES
+router.post("/update-rating", authMiddleware, updateRating);
 router.post("/average-rating", authMiddleware, getAverageRating);
 
-//ADMIN ROUTES
-router.get("/sys-admin/getusers", authMiddleware, admin, getUsers); // Only admin can get all users
+// ADMIN ROUTES
+router.get("/sys-admin/getusers", authMiddleware, admin, getUsers);
 
-export default router;
+module.exports = router;

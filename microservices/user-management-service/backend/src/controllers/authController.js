@@ -1,30 +1,22 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/user.js';
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
-
-
-//TO TEST GOOGLE AUTH - http://localhost:5000/api/auth/google
-//TO TEST FACEBOOK AUTH - http://localhost:5000/api/auth/facebook
-
-
-
-//GENERATE TOKEN
+// GENERATE TOKEN
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: '7d',
   });
 };
 
-export const registerUser = async (req, res) => {
+const registerUser = async (req, res) => {
   const { name, email, password, role, address, phoneNumber } = req.body;
   try {
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'User already exists' });
 
-       // Role-based address validation
-       if ((role === 'Customer' || role === 'RestaurantAdmin') && !address) {
-        return res.status(400).json({ message: 'Address is required for Customer and RestaurantAdmin roles' });
-      }
+    if ((role === 'Customer' || role === 'RestaurantAdmin') && !address) {
+      return res.status(400).json({ message: 'Address is required for Customer and RestaurantAdmin roles' });
+    }
 
     const user = new User({ name, email, password, role, address, phoneNumber });
     await user.save();
@@ -36,7 +28,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -44,10 +36,9 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-  // ✅ Update lastLogin timestamp
-  user.lastLogin = new Date();
-  await user.save(); // Save the update to DB
-
+    user.lastLogin = new Date();
+    user.loginCount = (user.loginCount || 0) + 1;
+    await user.save();
 
     const token = generateToken(user);
     res.json({ user, token });
@@ -56,16 +47,24 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const googleCallback = (req, res) => {
+const googleCallback = (req, res) => {
   const token = generateToken(req.user);
   res.redirect(`/auth-success?token=${token}`);
-  //res.redirect('/dashboard');// Handle client redirect
-
 };
 
-export const facebookCallback = (req, res) => {
+const facebookCallback = (req, res) => {
   const token = generateToken(req.user);
   res.redirect(`/auth-success?token=${token}`);
-  //res.redirect('/dashboard');// Handle client redirect
+};
 
+const logoutUser = (req, res) => {
+  res.status(200).json({ message: 'Logged out successfully' });
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  googleCallback,
+  facebookCallback,
+  logoutUser,
 };

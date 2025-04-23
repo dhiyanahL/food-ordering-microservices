@@ -1,23 +1,39 @@
-import express from 'express';
-import passport from 'passport';
-import {
+const express = require("express");
+const passport = require("passport");
+const {
   registerUser,
   loginUser,
   googleCallback,
   facebookCallback,
-} from '../controllers/authController.js';
+  logoutUser,
+} = require("../controllers/authController");
 
 const router = express.Router();
 
-//PUBLIC ROUTES
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+// PUBLIC ROUTES
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get("/logout", logoutUser);
 
 // OAuth
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google', { session: false }), googleCallback);
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
+  googleCallback
+);
 
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
-router.get('/facebook/callback', passport.authenticate('facebook', { session: false }), facebookCallback);
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+);
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { session: false }),
+  facebookCallback
+);
 
-export default router;
+module.exports = router;

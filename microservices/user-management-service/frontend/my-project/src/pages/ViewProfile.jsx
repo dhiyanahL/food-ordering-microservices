@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash, FaHeart, FaListAlt, FaStar, FaMedal } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaHeart, FaListAlt, FaStar, FaMedal, FaSignInAlt } from 'react-icons/fa';
 import { BsPersonCircle } from 'react-icons/bs';
 import { MdDateRange, MdAccessTime, MdEmail, MdPhone, MdHome } from 'react-icons/md';
 
@@ -26,8 +26,8 @@ const ViewProfile = () => {
   const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'N/A';
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] flex justify-center items-center p-6">
-      <div className="bg-[#F2EBE3] shadow-md rounded-2xl p-8 w-full max-w-3xl text-[#103713] border-2 border-green-700">
+    <div className="min-h-screen bg-[#F2EBE3] flex justify-center items-center p-6">
+      <div className="bg-[#FFFDF5] shadow-md rounded-2xl p-8 w-full max-w-3xl text-[#103713] border-2 border-green-700">
         
         {/* Profile Icon */}
         <div className="text-center mb-4">
@@ -87,34 +87,34 @@ const ViewProfile = () => {
 
         {/* Activity Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center mb-8 font-[Kalnia]">
-          <div className="bg-white rounded-xl p-4 shadow-md">
-            <FaListAlt className="text-3xl text-[#103713] mx-auto mb-2" />
-            <p className="text-lg font-semibold">Total Orders</p>
-            <p className="text-2xl text-[#628B35]">--</p>
+          <div className="bg-[#648e37] rounded-xl p-4 shadow-md border-2 border-darkGreen border-700">
+            <FaMedal className="text-3xl text-[#ebcc1f] mx-auto mb-2" />
+            <p className="text-lg text-softBeige font-semibold">Membership Tier</p>
+            <p className="text-2xl text-darkGreen">{user.membershipTier}</p>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-md">
-            <FaHeart className="text-3xl text-red-500 mx-auto mb-2" />
-            <p className="text-lg font-semibold">Favorites</p>
-            <p className="text-2xl text-[#628B35]">--</p>
+          <div className="bg-[#648e37]  rounded-xl p-4 shadow-md border-2 border-darkGreen border-700 ">
+            <FaSignInAlt className="text-3xl text-red-500 mx-auto mb-2" />
+            <p className="text-lg  text-softBeige font-semibold">Login Count</p>
+            <p className="text-2xl  text-darkGreen">{user.loginCount}</p>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-md">
+          <div className="bg-[#648e37] rounded-xl p-4 shadow-md border-2 border-darkGreen border-700">
             <FaStar className="text-3xl text-yellow-500 mx-auto mb-2" />
-            <p className="text-lg font-semibold">Avg Rating</p>
-            <p className="text-2xl text-[#628B35]">--</p>
+            <p className="text-lg text-softBeige font-semibold">Avg Rating</p>
+            <p className="text-2xl text-darkGreen">{user.averageRatingGiven.toFixed(1)}</p>
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-between">
+        <div className="flex justify-center gap-x-4">
           <button
             onClick={() => navigate('/edit')}
-            className="flex items-center gap-2 bg-[#103713] text-white py-2 px-4 rounded-xl hover:bg-[#0d2f10] font-[Kalnia]"
+            className="flex items-center gap-2 bg-[#103713] text-white py-2 px-4 rounded-xl hover:bg-[#0d2f10] font-[Kalnia] border-2 border-yellow-500 border-700"
           >
             <FaEdit /> Edit
           </button>
           <button
             onClick={() => navigate('/delete')}
-            className="flex items-center gap-2 bg-red-600 text-white py-2 px-4 rounded-xl hover:bg-red-700 font-[Kalnia]"
+            className="flex items-center gap-2 bg-red-600 text-white py-2 px-4 rounded-xl hover:bg-red-700 font-[Kalnia] border-2 border-black border-700"
           >
             <FaTrash /> Delete
           </button>
