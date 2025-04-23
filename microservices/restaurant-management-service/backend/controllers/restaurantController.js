@@ -292,9 +292,7 @@ const getOpenRestaurants = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
-
-//Add ananlytics and do the integration with orders and order analytics to find the most sold items for each restaurant 
+}; 
 
 module.exports = {
   registerRestaurant,
