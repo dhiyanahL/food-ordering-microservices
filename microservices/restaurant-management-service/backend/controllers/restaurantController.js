@@ -5,7 +5,33 @@ const axios = require("axios");
 //POST /restaurants
 const registerRestaurant = async (req, res) => {
   try {
-    const newRestaurant = new Restaurant(req.body);
+    const {
+      name,
+      address,
+      openTime,
+      closeTime,
+      cuisineType,
+      contactNumber,
+      email,       
+      imageUrl     
+    } = req.body;
+
+    // Ensure logged-in user exists (from token)
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized. No user found." });
+    }
+
+    const newRestaurant = new Restaurant({
+      name,
+      address,
+      openTime,
+      closeTime,
+      cuisineType,
+      contactNumber,
+      email,
+      imageUrl,
+      ownerId: req.user._id,
+    });
     const savedRestaurant = await newRestaurant.save();
 
     //Send notifcation to admin service
@@ -26,6 +52,17 @@ const getAllRestaurants = async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
     res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//Get all Restaurants Belonging to Logged-in User
+//GET /restaurants/my
+const getMyRestaurants = async (req, res) => {
+  try {
+    const myRestaurants = await Restaurant.find({ ownerId: req.user._id });
+    res.status(200).json(myRestaurants);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -104,20 +141,28 @@ const updateRestaurantDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updateRestaurant = await Restaurant.findByIdAndUpdate(id, req.body, {
+    const restaurant = await Restaurant.findById(id);
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    if (restaurant.ownerId.toString() !== req.user._id) {
+      return res.status(403).json({ message: "Not authorized to modify this restaurant" });
+    }
+
+    //Now update
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
 
-    if (!updateRestaurant) {
-      return res.status(404).json({ message: "Restaurant not found" });
-    }
-
-    res.status(200).json(updateRestaurant);
+    res.status(200).json(updatedRestaurant);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 //Delete a restaurant by ID
 //DELETE /restaurants/:restaurantId
@@ -125,17 +170,25 @@ const deleteRestaurant = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const restaurant = await Restaurant.findByIdAndDelete(id);
+    const restaurant = await Restaurant.findById(id);
 
     if (!restaurant) {
-      res.status(404).json({ message: "Restaurant not found" });
+      return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    res.status(200).json({ messgae: "Restaurant successfully deleted" });
+    if (restaurant.ownerId.toString() !== req.user._id) {
+      return res.status(403).json({ message: "Not authorized to delete this restaurant" });
+    }
+
+    //Now delete
+    await Restaurant.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Restaurant successfully deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 //Search restaurants by name or cuisine
 //GET /restaurants/search?query=something
@@ -241,9 +294,12 @@ const getOpenRestaurants = async (req, res) => {
   }
 };
 
+//Add ananlytics and do the integration with orders and order analytics to find the most sold items for each restaurant 
+
 module.exports = {
   registerRestaurant,
   getAllRestaurants,
+  getMyRestaurants,
   getApprovedRestaurants,
   updateRestaurantStatus,
   getRestaurantById,
