@@ -9,11 +9,11 @@ const updateRestaurantStatus = async (req, res) => {
 
   try {
     //Get restaurant details from restaurant service
-    const response = await axios.get(`http://localhost:5000/restaurants/${id}`);
+    const response = await axios.get(`http://localhost:5400/restaurants/${id}`);
     const restaurant = response.data;
 
     //Update restaurant status in restaurant service
-    const updated = await axios.put(`http://localhost:5000/restaurants/${id}`, {
+    const updated = await axios.put(`http://localhost:5400/restaurants/${id}`, {
       status,
     });
 
@@ -24,7 +24,7 @@ const updateRestaurantStatus = async (req, res) => {
     });
 
     // Auto-notification for restaurant owner
-    await axios.post("http://localhost:5000/restaurant-notifications", {
+    await axios.post("http://localhost:5400/restaurant-notifications", {
       restaurantId: restaurant._id,
       message: `Your restaurant was ${status} by the system admin.`,
       type: status === "approved" ? "success" : "warning",
@@ -96,11 +96,11 @@ const deleteRestaurant = async (req, res) => {
 
   try {
     // Get restaurant details
-    const response = await axios.get(`http://localhost:5000/restaurants/${id}`);
+    const response = await axios.get(`http://localhost:5400/restaurants/${id}`);
     const restaurant = response.data;
 
     // Delete the restaurant
-    await axios.delete(`http://localhost:5000/restaurants/${id}`);
+    await axios.delete(`http://localhost:5400/restaurants/${id}`);
 
     // Notify the system admin
     await axios.post("http://localhost:5100/admin/notifications", {
@@ -109,7 +109,7 @@ const deleteRestaurant = async (req, res) => {
     });
 
     // Notify the restaurant owner
-    await axios.post("http://localhost:5000/restaurant-notifications", {
+    await axios.post("http://localhost:5400/restaurant-notifications", {
       restaurantId: restaurant._id,
       message: `Your restaurant was deleted by the system admin. Reason: ${reason}`,
       type: "error",
@@ -125,7 +125,7 @@ const deleteRestaurant = async (req, res) => {
 //GET /admin/dashboard/restaurant-summary
 const getRestaurantSummary = async (req, res) => {
   try {
-    const response = await axios.get("http://localhost:5000/restaurants");
+    const response = await axios.get("http://localhost:5400/restaurants");
     const restaurants = response.data;
 
     const totalRestaurants = restaurants.length;
@@ -148,7 +148,7 @@ const getRestaurantSummary = async (req, res) => {
 //GET /admin/restaurant-stats/cuisine-summary
 const getCuisineSummary = async (req, res) => {
   try {
-    const response = await axios.get("http://localhost:5000/restaurants");
+    const response = await axios.get("http://localhost:5400/restaurants");
     const restaurants = response.data;
 
     const cuisineCounts = {};
@@ -169,7 +169,7 @@ const getCuisineSummary = async (req, res) => {
 //GET /admin/restaurant-stats/registration-trends
 const getRegistrationTrends = async (req, res) => {
   try {
-    const response = await axios.get("http://localhost:5000/restaurants");
+    const response = await axios.get("http://localhost:5400/restaurants");
     const restaurants = response.data;
 
     const trends = {};
