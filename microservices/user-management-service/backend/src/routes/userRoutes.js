@@ -36,6 +36,6 @@ router.get("/favorites", authMiddleware, getFavorites);
 
 
 // ADMIN ROUTES
-router.get("/sys-admin/getusers", authMiddleware, admin, getUsers);
+router.get("/admin/getusers", authMiddleware, admin, getUsers);
 
 module.exports = router;

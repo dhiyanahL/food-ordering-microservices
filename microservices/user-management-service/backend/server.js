@@ -26,5 +26,5 @@ app.use("/api/user", userRoutes);
 // Server Listen
 app.listen(5000, () => {
   connectDB();
-  console.log("Listening on port 5000");
+  console.log("User Management Service : Listening on port 5000");
 });

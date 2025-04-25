@@ -17,16 +17,17 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("role", user.role);
 
-      // Redirect based on role
+      //ROLE BASED DASHBOARD REDIRECT
+      // Redirect based on role - DASHBOARD REDIRECT 
       switch (user.role) {
         case "Customer":
           navigate("/customer/dashboard");
           break;
         case "DeliveryPersonnel":
-          navigate("/delivery/dashboard");
+          navigate("/delivery-personnel/dashboard");
           break;
         case "RestaurantAdmin":
-          navigate("/restaurant/dashboard");
+          navigate("/restaurant-admin/dashboard");
           break;
         case "Admin":
           navigate("/admin/dashboard");
