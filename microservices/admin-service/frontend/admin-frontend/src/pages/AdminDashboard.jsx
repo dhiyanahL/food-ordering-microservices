@@ -65,7 +65,7 @@ export default function AdminDashboard() {
 
             {/* Top 5 Offers */}
             <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-oliveGreen">
-              <h3 className="text-2xl font-bold text-darkGreen mb-4">Top 5 Offers</h3>
+              <h3 className="text-2xl font-bold text-darkGreen mb-4">Top  Offers</h3>
               {loading ? (
                 <p>Loading offers...</p>
               ) : offers.length === 0 ? (
