@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaUserEdit } from 'react-icons/fa'; // Pencil icon
 import { BsPersonCircle } from 'react-icons/bs'; // Profile icon
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import Footer from '../components/Footer';
 
 const EditProfile = () => {
   const [formData, setFormData] = useState({
@@ -64,7 +67,17 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2EBE3] flex justify-center items-center p-6">
+
+    <div className="min-h-screen flex flex-col">
+      <Header toggleSidebar={() => {}} />
+
+    <div className="min-h-screen  flex justify-center items-center p-6"
+    style={{
+      backgroundImage: `url('/images/bg.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    }}>
       <form onSubmit={handleSubmit} className="bg-[#FFFDF5] shadow-md rounded-2xl p-8 w-full max-w-3xl text-[#103713] border-2 border-green-700">
         {/* Profile Icon at the top */}
         <div className="text-center mb-6">
@@ -160,6 +173,8 @@ const EditProfile = () => {
           Save Changes
         </button>
       </form>
+    </div>
+    <Footer />
     </div>
   );
 };

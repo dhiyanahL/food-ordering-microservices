@@ -34,7 +34,7 @@ export default function LoginForm({ onLogin }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-offWhite p-6 rounded-2xl shadow-md w-full max-w-md border-2 border-oliveGreen">
+    <form onSubmit={handleSubmit} className="bg-offWhite p-6 rounded-2xl shadow-md w-full max-w-md border-4 border-oliveGreen">
       <h2 className="text-5xl font-bold bg-gradient-to-r from-emerald-700 via-lime-500 to-green-800 bg-clip-text text-transparent font-kalnia text-center mb-4">BiteCloud</h2>
 
       <div className="mb-4">
@@ -68,7 +68,7 @@ export default function LoginForm({ onLogin }) {
           onClick={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
           className="absolute top-2/3 right-3 transform -translate-y-1/4 cursor-pointer text-oliveGreen"
         >
-          {passwordVisible ? <AiOutlineEyeInvisible size={24} /> : <AiOutlineEye size={24} />}
+          {passwordVisible ? <AiOutlineEye size={24} /> : <AiOutlineEyeInvisible size={24} />}
         </span>
         {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
       </div>

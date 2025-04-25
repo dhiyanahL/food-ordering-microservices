@@ -44,7 +44,7 @@ const Sidebar = ({ role, isOpen }) => {
 
   return (
     <aside
-      className={`bg-oliveGreen h-screen flex flex-col border-r-4 border-[#053002] shadow-lg
+      className={`bg-gradient-to-br from-emerald-700 via-lime-600 to-green-800 text-[#103713] h-screen flex flex-col border-r-4 border-[#053002] shadow-lg
         ${isOpen ? 'w-56' : 'w-0'} overflow-hidden`}
     >
       <nav className={`flex-1 p-4 mt-16 ${isOpen ? 'block' : 'hidden'}`}>

@@ -1,4 +1,5 @@
 import LoginForm from "../components/LoginForm";
+import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -42,8 +43,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-softBeige">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-emerald-700 via-lime-600 to-green-800">
+    <div className="flex-grow flex items-center justify-center">
       <LoginForm onLogin={handleLogin} />
     </div>
+    <Footer />
+  </div>
+    
   );
 }

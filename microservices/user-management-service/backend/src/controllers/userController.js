@@ -22,12 +22,13 @@ exports.editProfile = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  const { name, email, oldPassword, newPassword, phoneNumber, address } = req.body;
+  const { name, email, oldPassword, newPassword, phoneNumber, address,averageRatingGiven } = req.body;
 
   user.name = name || user.name;
   user.email = email || user.email;
   user.phoneNumber = phoneNumber || user.phoneNumber;
   user.address = address || user.address;
+  user.averageRatingGiven = averageRatingGiven || user.averageRatingGiven;
 
   if (oldPassword && newPassword) {
     const isMatch = await bcrypt.compare(oldPassword, user.password);
@@ -55,6 +56,7 @@ exports.editProfile = async (req, res) => {
         address: user.address,
         membershipTier: user.membershipTier,
         loyaltyPoints: user.loyaltyPoints,
+        averageRatingGiven: user.averageRatingGiven
       },
     });
   } catch (error) {
@@ -66,4 +68,42 @@ exports.editProfile = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   await User.findByIdAndDelete(req.user.id);
   res.json({ message: "User deleted" });
+};
+
+exports.addFavorite = async (req, res) => {
+  const { restaurantId } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (user.favorites.includes(restaurantId)) {
+      return res.status(400).json({ message: 'Already favorited' });
+    }
+
+    user.favorites.push(restaurantId);
+    await user.save();
+
+    res.status(200).json({ message: 'Added to favorites' });
+  } catch (error) {
+    console.error('Error adding to favorites:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// Get Favorites
+exports.getFavorites = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId).populate('favorites');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json(user.favorites);
+  } catch (error) {
+    console.error('Error fetching favorites:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
