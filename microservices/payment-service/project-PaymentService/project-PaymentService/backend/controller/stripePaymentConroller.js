@@ -1,9 +1,14 @@
 const Stripe = require('stripe');
 const dotenv = require('dotenv');
+const Payment = require('../models/PaymentSchema');
+//const sendNotification = require('../utilities/Notification');
+//const createInAppNotification = require('./notificationController');
 
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
 
 exports.createPaymentIntent = async(req , res)=>{
 
@@ -54,13 +59,16 @@ exports.createPaymentIntent = async(req , res)=>{
 
         }*/
 
-       
+        
         
         const paymentIntent = await stripe.paymentIntents.create({
 
             amount,
             currency,
-            payment_method_types : ['card'],
+            /*payment_method_types : ['card'],*/
+            automatic_payment_methods: {
+              enabled: true, // 🔥 Enables Apple Pay, Google Pay, Link, and card payments automatically
+            },
             customer : /*stripeCustomerId*/stripeMockCustomerId,
             metadata : {
 
@@ -71,8 +79,8 @@ exports.createPaymentIntent = async(req , res)=>{
 
         });
 
-       // const reply = await stripe.paymentIntents.retrieve(paymentIntent.id)
-        //console.log(reply.status);
+       const reply = await stripe.paymentIntents.retrieve(paymentIntent.id)
+        console.log(reply.status);
 
         
 
@@ -88,22 +96,64 @@ exports.createPaymentIntent = async(req , res)=>{
 }
 
 
-/*exports.checkPaymentStatus = async (req, res) => {
-    const { paymentIntentId } = req.params.id;
-    //console.log(paymentIntentId);
+
+  exports.checkPaymentStatus = async (req, res) => {
+
   
-    try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      //console.log(paymentIntent.status);
-     // console.log(paymentIntent.metadata.cartId);
-     
+  const { paymentIntentId, userId, cartId, restaurantId } = req.body;
+  //const user = await User.findById(userId);
+  const userEmail = /*user.email*/ "slholidays2018@gmail.com";
+  //const restaurant = await Restaurant.findById(restaurantId);
+  const restaurantEmail = /*restaurant.email*/ "restaurant@example.com" ;
+
+
+
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    const payment = new Payment({
+      paymentId: paymentIntentId,
+      paymentDate: new Date(paymentIntent.created * 1000),
+      amount: paymentIntent.amount,
+      paymentMethod: paymentIntent.payment_method_types,
+      stripeCustomerId: paymentIntent.customer,
+      userId,
+      restaurantId,
+      cartId,
+      paymentStatus: paymentIntent.status
+    });
+
+    /*if(paymentIntent.status == "failed"){
+
+      sendNotification(userEmail,`Payment Unsuccess ${paymentIntentId}`,`Your Order Details As Below ${paymentIntent.amount}`);
+
+    }if(paymentIntent.status == "succeeded"){
+
+      sendNotification(userEmail,`Your Delivery Order ${paymentIntentId}`,`Your Order Details As Below ${paymentIntent.amount}`);
+      //Call the Create Order Controller method
+      //Call the create Notification method for confirming the order to show in notification list in the app
+      //Call the method Assigning a deliver person
+      //Call the create Notification method for informing the delivery person about the delivery and the customer in notification list in the app
+      //Call the create notification method for informing the restaurant about the order in notification list in the app
+      //send email to restaurant
+      //send email to delivery person
       
 
-      res.json({ status: paymentIntent.status });
-    } catch (err) {
-      res.status(500).json({ err: "Failed to retrieve status" });
-    }
-  };*/
+
+    }*/
+   
+
+    const saved = await payment.save();
+   
+    res.status(201).json({ message: "Payment saved", data: saved });
+
+  } catch (err) {
+    console.error("Payment save error:", err);
+    res.status(500).json({ err: "Failed to save payment" });
+  }
+};
+
 
 
   exports.getPaymentList = async (req, res) => {
@@ -150,7 +200,7 @@ exports.createPaymentIntent = async(req , res)=>{
     }*/
 
     /*const paymentId = order.paymentId;*/
-    const paymentIntent = await stripe.paymentIntents.retrieve(/*paymentId*/'pi_3REjBMCBxogx844u1qKzWmyU',{ expand: ['charges'] });
+    const paymentIntent = await stripe.paymentIntents.retrieve(/*paymentId*/'pi_3RFJpICBxogx844u01I8QdPB',{ expand: ['charges'] });
    // console.log(paymentIntent)
     const chargeId = paymentIntent.latest_charge
     const refund = await stripe.refunds.create({
@@ -177,11 +227,18 @@ exports.createPaymentIntent = async(req , res)=>{
  
 
   }
-  
 
+
+
+
+
+ 
+
+ 
  exports.fetchPaymentsForRestaurant = async(req,res) =>{
 
   //const {restaurantId} = req.params.id
+
   let payments = await stripe.paymentIntents.list({limit : 100});
   let filteredPayments = [];
 
@@ -189,8 +246,7 @@ exports.createPaymentIntent = async(req , res)=>{
     if(payment.metadata && payment.metadata.restaurantId === "234"){
       filteredPayments.push(payment);
     }
-
-    
+ 
   }
 
   res.status(202).json({filteredPayments : filteredPayments})
@@ -198,4 +254,5 @@ exports.createPaymentIntent = async(req , res)=>{
  }
   
 
+ 
  
