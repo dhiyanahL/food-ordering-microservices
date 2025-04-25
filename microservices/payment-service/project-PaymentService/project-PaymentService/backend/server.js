@@ -8,8 +8,7 @@ const PORT  = 8000;
 
 const createPaymentIntentRoute = require('./Routes/stripePaymentRoute');
 
-//const webhookRoute = require('./Routes/webhookRoute');
-const addItemToTheCart = require('./Routes/cartRoute');
+
 
 
 app.use(cors());
@@ -17,8 +16,7 @@ app.use(express.json());
 
 app.use('/api/Payment',createPaymentIntentRoute);
 
-app.use('/api/Cart', addItemToTheCart);
-//app.use('/webhook',webhookRoute);
+
 
 mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser : true, useUnifiedTopology : true})
 .then((message)=>{
