@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 
-export default function AddOfferForm() {
+export default function EditOfferForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
@@ -15,6 +15,27 @@ export default function AddOfferForm() {
   const [errors, setErrors] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
+  const { id } = useParams(); // get offer ID from route params
+
+  // Fetch existing offer data
+  useEffect(() => {
+    const fetchOffer = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5100/admin/offers/${id}`);
+        console.log(response.data);
+        const offer = response.data;
+        setTitle(offer.title);
+        setDescription(offer.description);
+        setDiscountPercentage(offer.discountPercentage);
+        setValidFrom(offer.validFrom.split("T")[0]); // format date for input
+        setValidTill(offer.validTill.split("T")[0]);
+      } catch (error) {
+        toast.error("Failed to fetch offer details");
+      }
+    };
+
+    fetchOffer();
+  }, [id]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +52,7 @@ export default function AddOfferForm() {
       return;
     }
 
-    const newOffer = {
+    const updatedOffer = {
       title,
       description,
       discountPercentage,
@@ -40,21 +61,11 @@ export default function AddOfferForm() {
     };
 
     try {
-      await axios.post("http://localhost:5100/admin/offers", newOffer);
-      toast.success("Offer created successfully!");
-
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setDiscountPercentage("");
-      setValidFrom("");
-      setValidTill("");
-      setErrors({});
-
-      navigate("/admin/available-offers");
-
+      await axios.put(`http://localhost:5100/admin/offers/${id}`, updatedOffer);
+      toast.success("Offer updated successfully!");
+      navigate("/available-offers");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create offer");
+      toast.error(error.response?.data?.message || "Failed to update offer");
     }
   };
 
@@ -79,7 +90,7 @@ export default function AddOfferForm() {
               className="bg-offWhite p-8 rounded-2xl shadow-md border-2 border-oliveGreen"
             >
               <h2 className="text-5xl font-bold bg-gradient-to-r from-emerald-700 via-lime-500 to-green-800 bg-clip-text text-transparent font-kalnia text-center mb-8">
-                Add New Offer
+                Edit Offer
               </h2>
 
               {/* Title */}
@@ -92,7 +103,6 @@ export default function AddOfferForm() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full p-2 border border-softBeige rounded-lg focus:outline-none focus:ring-2 focus:ring-oliveGreen"
-                  placeholder="e.g. Black Friday Deal"
                   required
                 />
                 {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
@@ -107,7 +117,6 @@ export default function AddOfferForm() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full p-2 border border-softBeige rounded-lg focus:outline-none focus:ring-2 focus:ring-oliveGreen"
-                  placeholder="Optional description"
                   rows={3}
                 />
               </div>
@@ -122,7 +131,6 @@ export default function AddOfferForm() {
                   value={discountPercentage}
                   onChange={(e) => setDiscountPercentage(e.target.value)}
                   className="w-full p-2 border border-softBeige rounded-lg focus:outline-none focus:ring-2 focus:ring-oliveGreen"
-                  placeholder="e.g. 20"
                   min="0"
                   max="100"
                   required
@@ -167,7 +175,7 @@ export default function AddOfferForm() {
                 type="submit"
                 className="w-full bg-darkGreen text-white py-4 rounded-xl hover:bg-oliveGreen transition text-2xl font-kalnia"
               >
-                Create Offer
+                Update Offer
               </button>
             </form>
           </div>
