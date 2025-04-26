@@ -36,7 +36,7 @@ services:
     - ./microservices/restaurant-management-service/backend/.env
 
     environment:
-      - MONGODB_URI = mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/restaurant-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      - MONGODB_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/restaurant-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
 
     depends_on:
@@ -85,8 +85,7 @@ services:
     - ./microservices/notification-service/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/notifications?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - 
 
     depends_on:
       - mongo
@@ -102,8 +101,7 @@ services:
     - ./microservices/payment-service/project-PaymentService/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/payments?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
-      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      
     depends_on:
       - mongo
 
