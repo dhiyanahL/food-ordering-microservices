@@ -13,6 +13,7 @@ import AddOfferForm from './pages/AddOfferForm'
 import AvailableOffers from './pages/AvailableOffers'
 import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
+import StripePayment from "./pages/dashboards/CheckoutForm";
 
 function App() {
   return (
@@ -38,6 +39,10 @@ function App() {
         {/* Dashboards for restaurant admin role */}
         <Route path="/restaurant/dashboard" element={<RestaurantAdminDashboard />} />
         <Route path="/restaurant/dashboard/:restaurantId" element={<RestaurantDetailDashboard />} />
+
+        {/*Payment Gateway  */}
+
+        <Route path="/payment/checkout" element = {<StripePayment/>}/>
         
       </Routes>
     </Router>
