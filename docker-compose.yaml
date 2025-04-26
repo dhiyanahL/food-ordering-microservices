@@ -25,9 +25,8 @@ services:
     ports:
       - '5400:5400'
     environment:
-      - MONGO_URI=mongodb://mongo:27017/restaurant-db
-    depends_on:
-      - mongo
+      - MONGODB_URI = mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/restaurant-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      - JWT_SECRET=DS_secret_jwt_key
 
   delivery-service:
     build: ./microservices/delivery-service/backend
