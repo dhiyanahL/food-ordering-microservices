@@ -14,13 +14,16 @@ services:
     container_name: user-management-service
     ports:
       - '5000:5000'
-    
+
     env_file:
-      - .env
+    - ./microservices/user-management-service/backend/.env
+  
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/users?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
       
+    depends_on:
+    - mongo
     
 
   restaurant-management-service:
