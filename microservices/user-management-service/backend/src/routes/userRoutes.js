@@ -5,6 +5,8 @@ const {
   editProfile,
   deleteUser,
   getUsers,
+  addFavorite,
+  getFavorites
 } = require("../controllers/userController");
 const {
   getLoyaltyPoints,
@@ -12,10 +14,7 @@ const {
   redeemLoyaltyPoints,
   simulateOrderLoyalty,
 } = require("../controllers/loyaltyController");
-const {
-  updateRating,
-  getAverageRating,
-} = require("../controllers/ratingController");
+
 
 const router = express.Router();
 
@@ -30,11 +29,13 @@ router.post("/loyalty/add", authMiddleware, addLoyaltyPoints);
 router.post("/loyalty/redeem", authMiddleware, redeemLoyaltyPoints);
 router.post("/loyalty/simulate-order", authMiddleware, simulateOrderLoyalty);
 
-// RATING ORDER ROUTES
-router.post("/update-rating", authMiddleware, updateRating);
-router.post("/average-rating", authMiddleware, getAverageRating);
+
+// FAVORITES ROUTES
+router.post("/favorites", authMiddleware, addFavorite);
+router.get("/favorites", authMiddleware, getFavorites);
+
 
 // ADMIN ROUTES
-router.get("/sys-admin/getusers", authMiddleware, admin, getUsers);
+router.get("/admin/getusers", authMiddleware, admin, getUsers);
 
 module.exports = router;
