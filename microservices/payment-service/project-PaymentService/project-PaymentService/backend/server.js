@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
-const PORT  = 8000;
+const PORT  = 5300;
 //const ngrok = require('ngrok');
 
 const createPaymentIntentRoute = require('./Routes/stripePaymentRoute');
