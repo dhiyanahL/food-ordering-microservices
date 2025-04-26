@@ -16,7 +16,7 @@ spec:
         - name: delivery-service
           image: your-dockerhub/delivery-service:latest
           ports:
-            - containerPort: 3000
+            - containerPort: 5600
           env:
             - name: MONGO_URI
               value: "mongodb://mongodb:27017"
