@@ -69,7 +69,7 @@ services:
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/payments?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      - STRIPE_SECRET_KEY = ${STRIPE_SECRET_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
     depends_on:
       - mongo
 
