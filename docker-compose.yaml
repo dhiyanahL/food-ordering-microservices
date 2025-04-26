@@ -59,6 +59,9 @@ services:
     container_name: notification-service
     ports:
       - '5200:5200'
+
+    env_file:
+    - ./microservices/notification-service/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/notifications?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - EMAIL_USER=${EMAIL_USER}
@@ -72,6 +75,10 @@ services:
     container_name: payment-service
     ports:
       - '5300:5300'
+
+    env_file:
+    
+    - ./microservices/payment-service/project-PaymentService/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/payments?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
