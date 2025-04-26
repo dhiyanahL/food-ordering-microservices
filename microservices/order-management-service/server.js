@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

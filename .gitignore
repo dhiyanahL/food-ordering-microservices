@@ -1,1 +1,9 @@
-node_modules
+# Node modules folder
+node_modules/
+
+# Environment variables file (contains sensitive info)
+.env
+
+#Docker files
+Dockerfile
+docker-compose.yml
