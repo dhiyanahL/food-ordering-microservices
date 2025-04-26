@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+  user-management-service:
+    build: ./microservices/user-management-service/backend
+    container_name: user-management-service
+    ports:
+      - '5000:5000'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/users
+      - JWT_SECRET=DS_secret_jwt_key
+    depends_on:
+      - mongo
+
+  restaurant-management-service:
+    build: ./microservices/restaurant-management-service/backend
+    container_name: restaurant-management-service
+    ports:
+      - '5400:5400'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/restaurant-db
+    depends_on:
+      - mongo
+
+  delivery-service:
+    build: ./microservices/delivery-service/backend
+    container_name: delivery-service
+    ports:
+      - '5600:5600'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/delivery_service
+    depends_on:
+      - mongo
+
+  order-service:
+    build: ./microservices/order-service/backend
+    container_name: order-service
+    ports:
+      - '5500:5500'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/order_service_db
+    depends_on:
+      - mongo
+
+  notification-service:
+    build: ./microservices/notification-service/backend
+    container_name: notification-service
+    ports:
+      - '5200:5200'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/notifications
+    depends_on:
+      - mongo
+
+  payment-service:
+    build: ./microservices/payment-service/backend
+    container_name: payment-service
+    ports:
+      - '5300:5300'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/payments
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
