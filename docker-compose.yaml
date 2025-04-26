@@ -31,9 +31,16 @@ services:
     container_name: restaurant-management-service
     ports:
       - '5400:5400'
+
+    env_file:
+    - ./microservices/restaurant-management-service/backend/.env
+
     environment:
       - MONGODB_URI = mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/restaurant-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
+
+    depends_on:
+    - mongo
 
   delivery-service:
     build: ./microservices/delivery-service/backend
