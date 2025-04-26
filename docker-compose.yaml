@@ -15,10 +15,9 @@ services:
     ports:
       - '5000:5000'
     environment:
-      - MONGO_URI=mongodb://mongo:27017/users
+      - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/users?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
-    depends_on:
-      - mongo
+    
 
   restaurant-management-service:
     build: ./microservices/restaurant-management-service/backend
