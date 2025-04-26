@@ -57,7 +57,7 @@ const CustomerDashboard = () => {
         setFavorites(favRes.data);
 
         const orderRes = await axios.get(
-          "http://localhost:5500/api/order/history?limit=3",
+          "http://localhost:5500/api/orders?limit=3",
           config
         );
         setRecentOrders(orderRes.data);

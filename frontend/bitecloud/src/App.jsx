@@ -14,6 +14,11 @@ import AvailableOffers from './pages/AvailableOffers'
 import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import StripePayment from "./pages/dashboards/CheckoutForm";
+import CartPage from "./pages/CartPage";  
+import OrderHistoryPage from "./pages/OrderHistory";
+import CheckoutPage from "./pages/CheckoutPage";
+import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
+
 
 function App() {
   return (
@@ -24,6 +29,7 @@ function App() {
         <Route path="/delete" element={<DeleteProfile />} />
         <Route path="/edit" element={<EditProfile />} />
         <Route path="/profile" element={<ViewProfile />} />
+
         {/* Dashboards for each user role */}
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
         <Route path="/customer/restaurants" element={<RestaurantList />} />
@@ -43,6 +49,22 @@ function App() {
         {/*Payment Gateway  */}
 
         <Route path="/payment/checkout" element = {<StripePayment/>}/>
+        
+
+        {/* Order history and checkout */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/customer/orders" element={<OrderHistoryPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/delivery/:orderId" element={<DeliveryTrackerPage />} />
+        
+        
+
+        {/* Order history and checkout */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/customer/orders" element={<OrderHistoryPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/delivery/:orderId" element={<DeliveryTrackerPage />} />
+        
         
       </Routes>
     </Router>
