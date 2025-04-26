@@ -27,7 +27,7 @@ export default function Login() {
           navigate("/delivery-personnel/dashboard");
           break;
         case "RestaurantAdmin":
-          navigate("/restaurant-admin/dashboard");
+          navigate("/restaurant/dashboard");
           break;
         case "Admin":
           navigate("/admin/dashboard");
