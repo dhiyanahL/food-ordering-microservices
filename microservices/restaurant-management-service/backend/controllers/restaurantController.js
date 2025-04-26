@@ -147,11 +147,14 @@ const updateRestaurantDetails = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    if (restaurant.ownerId.toString() !== req.user._id) {
+    //Only enforce auth check if user exists (i.e., called from frontend)
+    if (req.user && restaurant.ownerId.toString() !== req.user._id) {
       return res.status(403).json({ message: "Not authorized to modify this restaurant" });
     }
+    /*if (restaurant.ownerId.toString() !== req.user._id) {
+      return res.status(403).json({ message: "Not authorized to modify this restaurant" });
+    }*/
 
-    //Now update
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
@@ -162,7 +165,6 @@ const updateRestaurantDetails = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 
 //Delete a restaurant by ID
 //DELETE /restaurants/:restaurantId
@@ -176,7 +178,7 @@ const deleteRestaurant = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    if (restaurant.ownerId.toString() !== req.user._id) {
+    if (req.user && restaurant.ownerId.toString() !== req.user._id) {
       return res.status(403).json({ message: "Not authorized to delete this restaurant" });
     }
 
@@ -292,7 +294,9 @@ const getOpenRestaurants = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}; 
+};
+
+//Add ananlytics and do the integration with orders and order analytics to find the most sold items for each restaurant 
 
 module.exports = {
   registerRestaurant,
