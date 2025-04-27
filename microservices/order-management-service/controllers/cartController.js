@@ -3,11 +3,9 @@ const Order = require('../models/Order');
 
 //add items to cart
 const addToCart = async (req, res) => {
-    const customerId = req.userId; //get from token
-    const {itemId, itemName, price, quantity, restaurantId} = req.body;
+    const {customerId, customerName, itemId, itemName, price, quantity, restaurantId} = req.body;
 
     try {
-
         let cart = await Cart.findOne({ customerId });
         
         //check if cart already exists
@@ -18,6 +16,7 @@ const addToCart = async (req, res) => {
         } else {
             cart = new Cart({
                 customerId,
+                customerName,
                 restaurantId,
                 items: [],
                 totalPrice: 0,
@@ -44,8 +43,7 @@ const addToCart = async (req, res) => {
 
 //update item quantity in cart
 const updateItemQuantity = async (req, res) => {
-    const customerId = req.userId; //get from token
-    const { itemId, quantity } = req.body;
+    const { customerId, itemId, quantity } = req.body;
 
     try {
         const cart =  await Cart.findOne({ customerId });
@@ -57,6 +55,7 @@ const updateItemQuantity = async (req, res) => {
         const item = cart.items.find(item => item.itemId === itemId);
         if(item) {
             item.quantity = quantity;
+
             //calculate total
             cart.totalPrice = cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
             await cart.save();
@@ -74,8 +73,7 @@ const updateItemQuantity = async (req, res) => {
 
 //delete item from cart
 const removeItemFromCart = async (req, res) => {
-    const customerId = req.userId;
-    const { itemId } = req.body;
+    const { customerId, itemId } = req.body;
 
     try {
         const cart = await Cart.findOne({customerId});
@@ -99,7 +97,7 @@ const removeItemFromCart = async (req, res) => {
 
 //view the cart
 const viewCart = async (req, res) => {
-    const customerId = req.userId;
+    const {customerId} = req.body;
 
     try {
         const cart = await Cart.findOne({customerId});
@@ -117,7 +115,7 @@ const viewCart = async (req, res) => {
 
 //checkout
 const checkoutCart = async (req, res) => {
-    const customerId = req.userId;
+    const {customerId} = req.body;
 
     try {
         const cart = await Cart.findOne({customerId});
@@ -137,7 +135,6 @@ const checkoutCart = async (req, res) => {
         });
 
         await newOrder.save();
-
         await Cart.deleteOne({customerId});
 
         res.status(200).json({
@@ -150,7 +147,7 @@ const checkoutCart = async (req, res) => {
 };
 
 const clearCart = async (req, res) => {
-    const customerId = req.userId;
+    const {customerId} = req.body;
 
     try {
         await Cart.deleteOne({customerId});

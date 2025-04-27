@@ -120,19 +120,29 @@ export default function MenuPage() {
 
   const handleQuantityChange = (itemId, value) => {
     const qty = parseInt(value, 10);
-    setQuantityInputs(prev => ({
+    setQuantityInputs((prev) => ({
       ...prev,
       [itemId]: isNaN(qty) || qty < 1 ? 1 : qty,
     }));
   };
-  
-  const handleAddToCart = async (item, restaurantId) => {
+
+  const handleAddToCart = async (item) => {
     try {
-      const customerId = localStorage.getItem("userId"); // from login 
-      const customerName = localStorage.getItem("userName"); 
-      const currencyCode = "LKR"; 
+      const token = localStorage.getItem("token");
+      const customerId = localStorage.getItem("userId");
+      const customerName = localStorage.getItem("userName");
       const quantity = quantityInputs[item._id] || 1;
-  
+
+      console.log("Adding to cart: ", {
+        itemId: item._id,
+        itemName: item.name,
+        price: item.price,
+        quantity,
+        restaurantId,
+        customerId,
+        customerName,
+      });
+
       const payload = {
         customerId,
         customerName,
@@ -140,11 +150,20 @@ export default function MenuPage() {
         itemName: item.name,
         price: item.price,
         quantity,
-        restaurantId,
-        currencyCode,
+        restaurantId: restaurantId,
+        currencyCode: "LKR",
       };
-  
-      const res = await axios.post("http://localhost:5500/api/cart/add", payload);
+
+      const res = await axios.post(
+        "http://localhost:5500/api/cart/cart/add",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       alert("✅ Item added to cart!");
       console.log(res.data.cart);
     } catch (error) {
@@ -152,7 +171,7 @@ export default function MenuPage() {
       alert(error.response?.data?.message || "Could not add to cart.");
     }
   };
-  
+
   return (
     <div
       className="min-h-screen bg-repeat bg-center bg-fixed p-6"
@@ -293,18 +312,22 @@ export default function MenuPage() {
                   Rs. {item.price}
                 </div>
                 <div className="mb-2">
-  <label className="text-sm text-darkGreen font-medium mr-2">Qty:</label>
-  <input
-    type="number"
-    min="1"
-    value={quantityInputs[item._id] || 1}
-    onChange={(e) => handleQuantityChange(item._id, e.target.value)}
-    className="w-16 px-2 py-1 border rounded text-sm"
-  />
-</div>
+                  <label className="text-sm text-darkGreen font-medium mr-2">
+                    Qty:
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantityInputs[item._id] || 1}
+                    onChange={(e) =>
+                      handleQuantityChange(item._id, e.target.value)
+                    }
+                    className="w-16 px-2 py-1 border rounded text-sm"
+                  />
+                </div>
 
                 <button
-                onClick={() => handleAddToCart(item, item.restaurantId)}
+                  onClick={() => handleAddToCart(item, item.restaurantId)}
                   className="bg-darkGreen text-white px-3 py-1 rounded hover:bg-oliveGreen disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!item.available || !isRestaurantOpen}
                 >

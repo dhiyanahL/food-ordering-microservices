@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   mongo:
@@ -36,7 +36,7 @@ services:
     - ./microservices/restaurant-management-service/backend/.env
 
     environment:
-      - MONGODB_URI = mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/restaurant-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      - MONGODB_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/restaurant-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
 
     depends_on:
@@ -61,7 +61,6 @@ services:
 
   order-service:
     build: ./microservices/order-management-service
-    container_name: order-service
     ports:
       - '5500:5500'
 
@@ -76,34 +75,29 @@ services:
     - mongo
 
   notification-service:
-    build: ./microservices/notification-service/backend
+    build: ./microservices/notification-currency-service/backend
     container_name: notification-service
     ports:
       - '5200:5200'
 
     env_file:
-    - ./microservices/notification-service/backend/.env
+    - ./microservices/notification-currency-service/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/notifications?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-
+      
     depends_on:
       - mongo
 
   payment-service:
-    build: ./microservices/payment-service/project-PaymentService/backend
+    build: ./microservices/payment-service/project-PaymentService/project-PaymentService/backend
     container_name: payment-service
     ports:
       - '5300:5300'
-
-    env_file:
-    
-    - ./microservices/payment-service/project-PaymentService/backend/.env
+    env_file: 
+    - ./microservices/payment-service/project-PaymentService/project-PaymentService/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/payments?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
-      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      
     depends_on:
       - mongo
 

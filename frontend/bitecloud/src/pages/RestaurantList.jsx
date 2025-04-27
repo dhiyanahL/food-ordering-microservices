@@ -188,7 +188,7 @@ export default function RestaurantList  () {
             {restaurants.map((r) => (
               <div
                 key={r._id}
-                onClick={() => navigate(`/restaurants/${r._id}/menu`)}
+                onClick={() => navigate(`/customer/restaurants/${r._id}/menu`)}
                 className="bg-softBeige rounded-2xl shadow hover:shadow-xl transition duration-300 overflow-hidden"
               >
                 <div className="relative">
