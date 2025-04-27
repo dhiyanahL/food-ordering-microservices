@@ -69,7 +69,8 @@ function App() {
         <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
         <Route path="/order-history" element={<OrderHistoryPage />} />
 
-        {/*Dashboards for driver role */}
+        <Route path = "/payment/checkout" element = {<StripePayment/>}/>
+        <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
       </Routes>
       <ToastContainer autoClose={1500} />
     </Router>
