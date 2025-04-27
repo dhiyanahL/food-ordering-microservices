@@ -1,0 +1,20 @@
+# 1. Base image
+FROM node:18
+
+# 2. Set working directory inside container
+WORKDIR /app
+
+# 3. Copy package files first
+COPY package*.json ./
+
+# 4. Install dependencies
+RUN npm install
+
+# 5. Copy rest of the backend files into the container
+COPY . .
+
+# 6. Expose the port you use locally
+EXPOSE 5000
+
+# 7. Run your dev command
+CMD ["npm", "run", "dev"]
