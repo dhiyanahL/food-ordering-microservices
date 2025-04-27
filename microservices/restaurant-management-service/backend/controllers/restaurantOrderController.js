@@ -5,7 +5,7 @@ const getRestaurantOrders = async (req, res) => {
   const { restaurantId } = req.params;
 
   try {
-    const response = await axios.get(`http://localhost:5500/api/orders`, {
+    const response = await axios.get(`http://order-service:5500/api/orders`, {
       params: { restaurantId }
     });
 
