@@ -9,6 +9,7 @@ COPY package*.json ./
 
 # Step 4: Install dependencies
 RUN npm install
+RUN npm install -g nodemon
 
 # Step 5: Copy the rest of the backend code into the container
 COPY . .
