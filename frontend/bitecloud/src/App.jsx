@@ -19,9 +19,6 @@ import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import StripePayment from "./pages/CheckoutForm";
 import NotificationComponent from "./pages/NotificationComponent";
-
-
-
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
