@@ -145,6 +145,9 @@ exports.createPaymentIntent = async(req , res)=>{
    
 
     const saved = await payment.save();
+    //console.log(saved.amount);
+    
+  
    
     res.status(201).json({ message: "Payment saved", data: saved });
 
