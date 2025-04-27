@@ -107,7 +107,7 @@ const updateRestaurantStatus = async (req, res) => {
     //Notify the restaurant owner
     await axios.post("http://restaurant-management-service:5000/restaurant-notifications", {
       restaurantId: updated._id,
-      message: `Your restaurant was ${status} by the system admin.`,
+      message: `Your restaurant, ${restaurant.name}, was ${status} by the system admin.`,
       type: status === "approved" ? "success" : "warning",
     });
 

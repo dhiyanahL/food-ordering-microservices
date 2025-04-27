@@ -41,6 +41,10 @@ const Sidebar = ({ role, isOpen }) => {
       { name: 'Offers', icon: FaTags, path: '/admin/available-offers' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],
+    RestaurantAdmin: [
+      { name: 'Dashboard', icon: FaHome, path: '/restaurant/dashboard' },
+      { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
+    ],
   };
 
   return (

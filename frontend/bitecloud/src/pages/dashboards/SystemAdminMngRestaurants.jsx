@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import Header from "../../components/Header";
-import Sidebar from "../../components/Sidebar";
+import DashboardHeader from "../../components/DashboardHeader";
 import Footer from "../../components/Footer";
+import Sidebar from "../../components/Sidebar";
 import axios from "axios";
 
 export default function SystemAdminMngRestaurants() {
   const [restaurants, setRestaurants] = useState([]);
   const [summary, setSummary] = useState({ totalRestaurants: 0, pending: 0, approved: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [expandedRestaurantId, setExpandedRestaurantId] = useState(null); // For View Details
 
@@ -74,16 +74,16 @@ export default function SystemAdminMngRestaurants() {
 
   return (
     <div
-      className="flex min-h-screen flex-col"
+      className="min-h-screen bg-repeat bg-center bg-fixed"
       style={{
-        backgroundImage: `url('/images/bg.png')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundImage: `url('/bg.jpg')`,
+      backgroundSize: "cover",
+      backgroundRepeat: "repeat",
+      backgroundPosition: "top center",
       }}
     >
       {/* Header */}
-      <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <DashboardHeader toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
       {/* Sidebar + Main Content */}
       <div className="flex flex-1">

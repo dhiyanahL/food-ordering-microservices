@@ -26,7 +26,7 @@ const updateRestaurantStatus = async (req, res) => {
     // Auto-notification for restaurant owner
     await axios.post("http://restaurant-management-service:5400/restaurant-notifications", {
       restaurantId: restaurant._id,
-      message: `Your restaurant was ${status} by the system admin.`,
+      message: `Your restaurant, ${restaurant.name}, was ${status} by the system admin.`,
       type: status === "approved" ? "success" : "warning",
     });
 
@@ -111,7 +111,7 @@ const deleteRestaurant = async (req, res) => {
     // Notify the restaurant owner
     await axios.post("http://restaurant-management-service:5400/restaurant-notifications", {
       restaurantId: restaurant._id,
-      message: `Your restaurant was deleted by the system admin. Reason: ${reason}`,
+      message: `Your restaurant, ${restaurant.name}, was deleted by the system admin. Reason: ${reason}`,
       type: "error",
     });
 

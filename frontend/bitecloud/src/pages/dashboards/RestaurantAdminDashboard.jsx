@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
+import DashboardHeader from "../../components/DashboardHeader";
+import Footer from "../../components/Footer";
+import Sidebar from "../../components/Sidebar";
 
 export default function RestaurantDashboard() {
   const [restaurants, setRestaurants] = useState([]);
@@ -31,8 +34,10 @@ export default function RestaurantDashboard() {
       .catch((err) => console.error("❌ Error fetching restaurants:", err));
   };
 
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
+  //const [notifications, setNotifications] = useState([]);
+  //const [showNotifications, setShowNotifications] = useState(false);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -41,7 +46,7 @@ export default function RestaurantDashboard() {
       })
       .then((res) => {
         setRestaurants(res.data);
-
+{/*
         // After restaurants are loaded, fetch their notifications
         const notificationRequests = res.data.map((r) =>
           axios.get(`http://localhost:5400/restaurant-notifications/${r._id}`)
@@ -54,8 +59,8 @@ export default function RestaurantDashboard() {
           })
           .catch((err) =>
             console.error("❌ Error fetching notifications:", err)
-          );
-      })
+          ); */}
+      }) 
       .catch((err) => console.error("❌ Error fetching restaurants:", err));
   });
 
@@ -121,7 +126,7 @@ export default function RestaurantDashboard() {
       });
   };
 
-  const deleteNotification = async (id) => {
+  {/*const deleteNotification = async (id) => {
     try {
       await axios.delete(
         `http://localhost:5400/restaurant-notifications/${id}`
@@ -130,18 +135,25 @@ export default function RestaurantDashboard() {
     } catch (error) {
       console.error("Error deleting notification", error);
     }
-  };
+  }; */}
 
   return (
     <div
-    className="min-h-screen bg-repeat bg-center bg-fixed p-6"
+    className="min-h-screen bg-repeat bg-center bg-fixed"
     style={{
       backgroundImage: `url('/bg.jpg')`,
       backgroundSize: "cover",
       backgroundRepeat: "repeat",
       backgroundPosition: "top center",
     }}
-  >
+  > 
+  {/* Header */}
+  <DashboardHeader toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
+  {/* Sidebar + Main Content */}
+  <div className="flex flex-1">
+    <Sidebar role="RestaurantAdmin" isOpen={sidebarOpen} />
+
     {/* Inner content wrapper with padding all around */}
     <div className="w-[75%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
       {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
@@ -150,7 +162,7 @@ export default function RestaurantDashboard() {
       </h1>
 
       {/* 🔔 Notifications Section */}
-      <div className="mb-6 relative">
+     {/* <div className="mb-6 relative">
         <button
           onClick={() => setShowNotifications(!showNotifications)}
           className="relative bg-softBeige border rounded-full p-2 shadow hover:bg-gray-100"
@@ -203,7 +215,7 @@ export default function RestaurantDashboard() {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* 🔽 Dropdown + View Dashboard */}
       <div className="mb-4">
@@ -348,6 +360,8 @@ export default function RestaurantDashboard() {
         </form>
       </div>
     </div>
+    </div>
+    <Footer />
     </div>
   );
 }

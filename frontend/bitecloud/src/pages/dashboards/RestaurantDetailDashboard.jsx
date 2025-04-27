@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { XMarkIcon } from "@heroicons/react/24/solid"; // for close (delete) button
+import DashboardHeader from "../../components/DashboardHeader";
+import Footer from "../../components/Footer";
+import Sidebar from "../../components/Sidebar";
 
 export default function RestaurantDetailDashboard() {
   const { restaurantId } = useParams();
@@ -26,16 +29,17 @@ export default function RestaurantDetailDashboard() {
   const [editingMenuId, setEditingMenuId] = useState(null);
   const [showMenuItems, setShowMenuItems] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
+  //const [notifications, setNotifications] = useState([]);
+ //const [showNotifications, setShowNotifications] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    axios
+    {/*axios
       .get(`http://localhost:5400/restaurant-notifications/${restaurantId}`)
       .then((res) => setNotifications(res.data))
-      .catch((err) => console.error("Failed to load notifications", err));
+      .catch((err) => console.error("Failed to load notifications", err)); */}
 
     axios
       .get(`http://localhost:5400/restaurants/${restaurantId}`)
@@ -179,7 +183,7 @@ export default function RestaurantDetailDashboard() {
       .catch(() => alert("❌ Failed to delete restaurant"));
   };
 
-  const deleteNotification = async (id) => {
+  {/*const deleteNotification = async (id) => {
     try {
       await axios.delete(
         `http://localhost:5400/restaurant-notifications/${id}`
@@ -188,7 +192,7 @@ export default function RestaurantDetailDashboard() {
     } catch (error) {
       console.error("Error deleting notification", error);
     }
-  };
+  };*/}
 
   const filteredMenuItems = menuItems.filter(
     (item) =>
@@ -210,7 +214,7 @@ export default function RestaurantDetailDashboard() {
 
   return (
     <div
-      className="min-h-screen bg-repeat bg-center bg-fixed p-6"
+      className="min-h-screen bg-repeat bg-center bg-fixed"
       style={{
         backgroundImage: `url('/bg.jpg')`,
         backgroundSize: "cover",
@@ -218,21 +222,29 @@ export default function RestaurantDetailDashboard() {
         backgroundPosition: "top center",
       }}
     >
-      {/* Inner content wrapper with padding all around */}
-      <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
-        {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
-        <h1 className="text-4xl font-bold text-darkGreen font-kalnia mb-4 text-center">
-          Restaurant Dashboard – {restaurant?.name}
-          {/*Dashboard for Restaurant ID: {restaurantId} */}
-        </h1>
+      {/* Header */}
+      <DashboardHeader toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-        {restaurant.status !== "approved" && (
-          <p className="text-red-600 font-semibold mb-4">
-            ⚠️ This restaurant is not yet approved
-          </p>
-        )}
+      {/* Sidebar + Main Content */}
+      <div className="flex flex-1">
+        <Sidebar role="RestaurantAdmin" isOpen={sidebarOpen} />
 
-        {/* Notifications Icon + Dropdown */}
+        {/* Inner content wrapper with padding all around */}
+        <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
+          {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
+          <h1 className="text-4xl font-bold text-darkGreen font-kalnia mb-4 text-center">
+            Restaurant Dashboard – {restaurant?.name}
+            {/*Dashboard for Restaurant ID: {restaurantId} */}
+          </h1>
+
+          {restaurant.status !== "approved" && (
+            <p className="text-red-600 font-semibold mb-4">
+              ⚠️ This restaurant is not yet approved
+            </p>
+          )}
+
+          {/* Notifications Icon + Dropdown */}
+          {/*
         <div className="mb-6 relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
@@ -286,338 +298,349 @@ export default function RestaurantDetailDashboard() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
-        {/* Restaurant Info */}
-        <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
-          <h2 className="text-2xl font-bold text-darkGreen mb-4 font-kalnia">
-            Restaurant Info
-          </h2>
-          {!editingRestaurant ? (
-            <div className="flex flex-col md:flex-row gap-6">
-              <img
-                src={restaurant.imageUrl}
-                alt="restaurant"
-                className="h-[300px] w-[600px] object-cover rounded"
-              />
-              <div className="space-y-1">
-                <p>
-                  <strong>Restaurant ID:</strong> {restaurantId}
-                </p>
-                <p>
-                  <strong>Name:</strong> {restaurant.name}
-                </p>
-                <p>
-                  <strong>Email:</strong> {restaurant.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {restaurant.contactNumber}
-                </p>
-                <p>
-                  <strong>Address:</strong> {restaurant.address}
-                </p>
-                <p>
-                  <strong>Hours:</strong> {restaurant.openTime} –{" "}
-                  {restaurant.closeTime}
-                </p>
-                <p>
-                  <strong>Cuisine Type:</strong> {restaurant.cuisineType}
-                </p>
-                <p>
-                  <strong>Status:</strong> {restaurant.status}
-                </p>
-                <button
-                  onClick={() => setEditingRestaurant(true)}
-                  className="mt-3 bg-oliveGreen text-white px-4 py-1 rounded"
-                >
-                  Edit Details
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {[
-                "name",
-                "email",
-                "contactNumber",
-                "address",
-                "openTime",
-                "closeTime",
-              ].map((field) => (
-                <div key={field}>
-                  <input
-                    name={field}
-                    value={restaurantForm[field] || ""}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  />
-                  {restaurantErrors[field] && (
-                    <p className="text-red-500 text-sm">
-                      {restaurantErrors[field]}
-                    </p>
-                  )}
-                </div>
-              ))}
-
-              {/* Cuisine Type Dropdown */}
-              <div>
-                <label className="block text-sm text-darkGreen font-medium mb-1">
-                  Cuisine Type
-                </label>
-                <select
-                  name="cuisineType"
-                  value={restaurantForm.cuisineType?.[0] || ""}
-                  onChange={(e) =>
-                    setRestaurantForm({
-                      ...restaurantForm,
-                      cuisineType: [e.target.value],
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="">Select Cuisine</option>
-                  {[
-                    "Sri Lankan",
-                    "Indian",
-                    "Chinese",
-                    "Fast Food",
-                    "Pizza",
-                    "Bakery",
-                    "Seafood",
-                    "Other",
-                  ].map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                {restaurantErrors.cuisineType && (
-                  <p className="text-red-500 text-sm">
-                    {restaurantErrors.cuisineType}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm text-darkGreen font-medium mb-1">
-                  Restaurant Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const url = await uploadToCloudinary(file);
-                      setRestaurantForm({ ...restaurantForm, imageUrl: url });
-                    }
-                  }}
-                  className="w-full p-2 border rounded"
-                />
-                {restaurantErrors.imageUrl && (
-                  <p className="text-red-500 text-sm">
-                    {restaurantErrors.imageUrl}
-                  </p>
-                )}
-
-                {/* Image Preview */}
-                {restaurantForm.imageUrl && (
-                  <img
-                    src={restaurantForm.imageUrl}
-                    alt="Preview"
-                    className="h-[300px] w-[400px] object-cover rounded-xl mt-2"
-                  />
-                )}
-              </div>
-
-              <button
-                onClick={saveRestaurant}
-                className="bg-darkGreen text-white px-4 py-1 rounded"
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Menu Items */}
-        <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold text-darkGreen font-kalnia">
-              Menu Items
+          {/* Restaurant Info */}
+          <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
+            <h2 className="text-2xl font-bold text-darkGreen mb-4 font-kalnia">
+              Restaurant Info
             </h2>
-            <button
-              onClick={() => setShowMenuItems(!showMenuItems)}
-              className="text-sm text-oliveGreen underline hover:text-darkGreen"
-            >
-              {showMenuItems ? "Hide" : "Show"}
-            </button>
-          </div>
-          {/* ✅ Add Item Toggle Button*/}
-          <div className="mb-4">
-            <button
-              onClick={() => setShowAddForm((prev) => !prev)}
-              className="bg-darkGreen text-white px-4 py-2 rounded font-semibold hover:bg-oliveGreen"
-            >
-              ➕ Add New Item
-            </button>
-          </div>
-
-          {/* 🔽 Add New Item Form (Toggles on click) */}
-          {showAddForm && (
-            <div className="mb-6 border-4 border-lightGreen bg-offWhite rounded-xl p-6 shadow-md">
-              <h3 className="font-semibold mb-2 text-darkGreen">
-                New Menu Item
-              </h3>
-              {/* Form Fields */}
-              {["name", "description", "price", "originalPrice"].map(
-                (field) => (
+            {!editingRestaurant ? (
+              <div className="flex flex-col md:flex-row gap-6">
+                <img
+                  src={restaurant.imageUrl}
+                  alt="restaurant"
+                  className="h-[300px] w-[600px] object-cover rounded"
+                />
+                <div className="space-y-1">
+                  <p>
+                    <strong>Restaurant ID:</strong> {restaurantId}
+                  </p>
+                  <p>
+                    <strong>Name:</strong> {restaurant.name}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {restaurant.email}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {restaurant.contactNumber}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {restaurant.address}
+                  </p>
+                  <p>
+                    <strong>Hours:</strong> {restaurant.openTime} –{" "}
+                    {restaurant.closeTime}
+                  </p>
+                  <p>
+                    <strong>Cuisine Type:</strong> {restaurant.cuisineType}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {restaurant.status}
+                  </p>
+                  <button
+                    onClick={() => setEditingRestaurant(true)}
+                    className="mt-3 bg-oliveGreen text-white px-4 py-1 rounded"
+                  >
+                    Edit Details
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {[
+                  "name",
+                  "email",
+                  "contactNumber",
+                  "address",
+                  "openTime",
+                  "closeTime",
+                ].map((field) => (
                   <div key={field}>
                     <input
                       name={field}
+                      value={restaurantForm[field] || ""}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
                       placeholder={
                         field.charAt(0).toUpperCase() + field.slice(1)
                       }
-                      value={menuForm[field]}
-                      onChange={handleMenuChange}
-                      className="w-full mb-2 p-2 border rounded"
                     />
-                    {menuErrors[field] && (
+                    {restaurantErrors[field] && (
                       <p className="text-red-500 text-sm">
-                        {menuErrors[field]}
+                        {restaurantErrors[field]}
                       </p>
                     )}
                   </div>
-                )
-              )}
+                ))}
 
-              {/* Image Upload + Preview */}
-              <div>
-                <label className="block text-sm font-semibold text-darkGreen mb-1">
-                  Menu Item Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      setUploading(true);
-                      const url = await uploadToCloudinary(file);
-                      setUploading(false);
-                      setMenuForm({ ...menuForm, imageUrl: url });
+                {/* Cuisine Type Dropdown */}
+                <div>
+                  <label className="block text-sm text-darkGreen font-medium mb-1">
+                    Cuisine Type
+                  </label>
+                  <select
+                    name="cuisineType"
+                    value={restaurantForm.cuisineType?.[0] || ""}
+                    onChange={(e) =>
+                      setRestaurantForm({
+                        ...restaurantForm,
+                        cuisineType: [e.target.value],
+                      })
                     }
-                  }}
-                  className="w-full p-2 border rounded mb-2"
-                />
-                {uploading && (
-                  <p className="text-sm text-gray-500">Uploading...</p>
-                )}
-                {menuForm.imageUrl && (
-                  <img
-                    src={menuForm.imageUrl}
-                    alt="Preview"
-                    className="h-[300px] w-[400px] object-cover rounded-xl mb-2"
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="">Select Cuisine</option>
+                    {[
+                      "Sri Lankan",
+                      "Indian",
+                      "Chinese",
+                      "Fast Food",
+                      "Pizza",
+                      "Bakery",
+                      "Seafood",
+                      "Other",
+                    ].map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                  {restaurantErrors.cuisineType && (
+                    <p className="text-red-500 text-sm">
+                      {restaurantErrors.cuisineType}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm text-darkGreen font-medium mb-1">
+                    Restaurant Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const url = await uploadToCloudinary(file);
+                        setRestaurantForm({ ...restaurantForm, imageUrl: url });
+                      }
+                    }}
+                    className="w-full p-2 border rounded"
                   />
-                )}
-                {menuErrors.imageUrl && (
-                  <p className="text-red-500 text-sm">{menuErrors.imageUrl}</p>
-                )}
+                  {restaurantErrors.imageUrl && (
+                    <p className="text-red-500 text-sm">
+                      {restaurantErrors.imageUrl}
+                    </p>
+                  )}
+
+                  {/* Image Preview */}
+                  {restaurantForm.imageUrl && (
+                    <img
+                      src={restaurantForm.imageUrl}
+                      alt="Preview"
+                      className="h-[300px] w-[400px] object-cover rounded-xl mt-2"
+                    />
+                  )}
+                </div>
+
+                <button
+                  onClick={saveRestaurant}
+                  className="bg-darkGreen text-white px-4 py-1 rounded"
+                >
+                  Save
+                </button>
               </div>
+            )}
+          </div>
 
-              <label className="flex gap-2 items-center text-sm text-darkGreen mt-2">
-                <input
-                  type="checkbox"
-                  name="available"
-                  checked={menuForm.available}
-                  onChange={handleMenuChange}
-                />
-                Available
-              </label>
-
+          {/* Menu Items */}
+          <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold text-darkGreen font-kalnia">
+                Menu Items
+              </h2>
               <button
-                onClick={() => {
-                  addMenuItem();
-                  setShowAddForm(false); // 👈 Hide form after submission
-                }}
-                className="bg-darkGreen text-white px-4 py-2 rounded mt-2"
+                onClick={() => setShowMenuItems(!showMenuItems)}
+                className="text-sm text-oliveGreen underline hover:text-darkGreen"
               >
-                Add
+                {showMenuItems ? "Hide" : "Show"}
               </button>
             </div>
-          )}
+            {/* ✅ Add Item Toggle Button*/}
+            <div className="mb-4">
+              <button
+                onClick={() => setShowAddForm((prev) => !prev)}
+                className="bg-darkGreen text-white px-4 py-2 rounded font-semibold hover:bg-oliveGreen"
+              >
+                ➕ Add New Item
+              </button>
+            </div>
 
-          {showMenuItems && (
-            <>
-              {/*Search*/}
-              <div className="flex justify-end mb-6">
-                <input
-                  type="text"
-                  placeholder="Search menu items..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border border-oliveGreen bg-softBeige text-darkGreen rounded px-3 py-2 w-full md:w-80 shadow focus:outline-none focus:ring-2 focus:ring-oliveGreen"
-                />
-              </div>
+            {/* 🔽 Add New Item Form (Toggles on click) */}
+            {showAddForm && (
+              <div className="mb-6 border-4 border-lightGreen bg-offWhite rounded-xl p-6 shadow-md">
+                <h3 className="font-semibold mb-2 text-darkGreen">
+                  New Menu Item
+                </h3>
+                {/* Form Fields */}
+                {["name", "description", "price", "originalPrice"].map(
+                  (field) => (
+                    <div key={field}>
+                      <input
+                        name={field}
+                        placeholder={
+                          field.charAt(0).toUpperCase() + field.slice(1)
+                        }
+                        value={menuForm[field]}
+                        onChange={handleMenuChange}
+                        className="w-full mb-2 p-2 border rounded"
+                      />
+                      {menuErrors[field] && (
+                        <p className="text-red-500 text-sm">
+                          {menuErrors[field]}
+                        </p>
+                      )}
+                    </div>
+                  )
+                )}
 
-              {/* MENU LIST */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {filteredMenuItems.map((item) => (
-                  <div
-                    key={item._id}
-                    className="border-4 border-lightGreen bg-offWhite rounded-xl p-4 shadow hover:shadow-md transition"
-                  >
+                {/* Image Upload + Preview */}
+                <div>
+                  <label className="block text-sm font-semibold text-darkGreen mb-1">
+                    Menu Item Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setUploading(true);
+                        const url = await uploadToCloudinary(file);
+                        setUploading(false);
+                        setMenuForm({ ...menuForm, imageUrl: url });
+                      }
+                    }}
+                    className="w-full p-2 border rounded mb-2"
+                  />
+                  {uploading && (
+                    <p className="text-sm text-gray-500">Uploading...</p>
+                  )}
+                  {menuForm.imageUrl && (
                     <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="h-[300px] w-[400px] object-cover rounded-xl mb-3"
+                      src={menuForm.imageUrl}
+                      alt="Preview"
+                      className="h-[300px] w-[400px] object-cover rounded-xl mb-2"
                     />
-                    <p
-                      className="font-bold"
-                      dangerouslySetInnerHTML={{
-                        __html: highlightMatch(item.name, searchQuery),
-                      }}
-                    ></p>
+                  )}
+                  {menuErrors.imageUrl && (
+                    <p className="text-red-500 text-sm">
+                      {menuErrors.imageUrl}
+                    </p>
+                  )}
+                </div>
 
-                    {item.description && (
+                <label className="flex gap-2 items-center text-sm text-darkGreen mt-2">
+                  <input
+                    type="checkbox"
+                    name="available"
+                    checked={menuForm.available}
+                    onChange={handleMenuChange}
+                  />
+                  Available
+                </label>
+
+                <button
+                  onClick={() => {
+                    addMenuItem();
+                    setShowAddForm(false); // 👈 Hide form after submission
+                  }}
+                  className="bg-darkGreen text-white px-4 py-2 rounded mt-2"
+                >
+                  Add
+                </button>
+              </div>
+            )}
+
+            {showMenuItems && (
+              <>
+                {/*Search*/}
+                <div className="flex justify-end mb-6">
+                  <input
+                    type="text"
+                    placeholder="Search menu items..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="border border-oliveGreen bg-softBeige text-darkGreen rounded px-3 py-2 w-full md:w-80 shadow focus:outline-none focus:ring-2 focus:ring-oliveGreen"
+                  />
+                </div>
+
+                {/* MENU LIST */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {filteredMenuItems.map((item) => (
+                    <div
+                      key={item._id}
+                      className="border-4 border-lightGreen bg-offWhite rounded-xl p-4 shadow hover:shadow-md transition"
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-[300px] w-[400px] object-cover rounded-xl mb-3"
+                      />
                       <p
-                        className="text-sm text-gray-600"
+                        className="font-bold"
                         dangerouslySetInnerHTML={{
-                          __html: highlightMatch(item.description, searchQuery),
+                          __html: highlightMatch(item.name, searchQuery),
                         }}
                       ></p>
-                    )}
-                    <p>Rs. {item.price}</p>
-                    {item.originalPrice && (
-                      <p className="line-through text-sm">
-                        Rs. {item.originalPrice}
+
+                      {item.description && (
+                        <p
+                          className="text-sm text-gray-600"
+                          dangerouslySetInnerHTML={{
+                            __html: highlightMatch(
+                              item.description,
+                              searchQuery
+                            ),
+                          }}
+                        ></p>
+                      )}
+                      <p>Rs. {item.price}</p>
+                      {item.originalPrice && (
+                        <p className="line-through text-sm">
+                          Rs. {item.originalPrice}
+                        </p>
+                      )}
+                      <p className="text-xs text-green-600">
+                        {item.available ? "Available" : "Unavailable"}
                       </p>
-                    )}
-                    <p className="text-xs text-green-600">
-                      {item.available ? "Available" : "Unavailable"}
-                    </p>
 
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        onClick={() => startEditingMenu(item)}
-                        className="text-blue-500 text-sm"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteMenuItem(item._id)}
-                        className="text-red-500 text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => startEditingMenu(item)}
+                          className="text-blue-500 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteMenuItem(item._id)}
+                          className="text-red-500 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
 
-                    {/* Edit Form */}
-                    {editingMenuId === item._id && (
-                      <div className="mt-4 space-y-2">
-                        {["name", "description", "price", "originalPrice"].map(
-                          (field) => (
+                      {/* Edit Form */}
+                      {editingMenuId === item._id && (
+                        <div className="mt-4 space-y-2">
+                          {[
+                            "name",
+                            "description",
+                            "price",
+                            "originalPrice",
+                          ].map((field) => (
                             <input
                               key={field}
                               name={field}
@@ -628,88 +651,89 @@ export default function RestaurantDetailDashboard() {
                                 field.charAt(0).toUpperCase() + field.slice(1)
                               }
                             />
-                          )
-                        )}
+                          ))}
 
-                        {/* File input for updated image */}
-                        <div>
-                          <label className="text-sm font-medium text-darkGreen">
-                            Change Image
-                          </label>
+                          {/* File input for updated image */}
+                          <div>
+                            <label className="text-sm font-medium text-darkGreen">
+                              Change Image
+                            </label>
 
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files[0];
-                              if (file) {
-                                const url = await uploadToCloudinary(file);
-                                setUploading(false);
-                                setMenuForm({ ...menuForm, imageUrl: url });
-                              }
-                            }}
-                            className="w-full p-2 border rounded"
-                          />
-                          {uploading && (
-                            <p className="text-sm text-gray-500">
-                              Uploading...
-                            </p>
-                          )}
-                          {menuForm.imageUrl && (
-                            <img
-                              src={menuForm.imageUrl}
-                              alt="Preview"
-                              className="h-[300px] w-[400px] object-cover rounded-xl mt-2"
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  const url = await uploadToCloudinary(file);
+                                  setUploading(false);
+                                  setMenuForm({ ...menuForm, imageUrl: url });
+                                }
+                              }}
+                              className="w-full p-2 border rounded"
                             />
-                          )}
+                            {uploading && (
+                              <p className="text-sm text-gray-500">
+                                Uploading...
+                              </p>
+                            )}
+                            {menuForm.imageUrl && (
+                              <img
+                                src={menuForm.imageUrl}
+                                alt="Preview"
+                                className="h-[300px] w-[400px] object-cover rounded-xl mt-2"
+                              />
+                            )}
+                          </div>
+
+                          <label className="flex gap-2 items-center text-sm text-darkGreen">
+                            <input
+                              type="checkbox"
+                              name="available"
+                              checked={menuForm.available}
+                              onChange={handleMenuChange}
+                            />
+                            Available
+                          </label>
+                          <button
+                            onClick={updateMenuItem}
+                            className="bg-oliveGreen text-white px-3 py-1 rounded"
+                          >
+                            Save
+                          </button>
                         </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          {/* Orders Placeholder */}
+          <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
+            <h2 className="text-xl font-semibold text-darkGreen font-kalnia mb-2">
+              📦 Orders
+            </h2>
+            <p className="text-gray-600">
+              This section will display all orders related to this restaurant.
+            </p>
+            <p className="text-sm text-gray-500">
+              We'll implement this after integrating with the Order Service.
+            </p>
+          </div>
 
-                        <label className="flex gap-2 items-center text-sm text-darkGreen">
-                          <input
-                            type="checkbox"
-                            name="available"
-                            checked={menuForm.available}
-                            onChange={handleMenuChange}
-                          />
-                          Available
-                        </label>
-                        <button
-                          onClick={updateMenuItem}
-                          className="bg-oliveGreen text-white px-3 py-1 rounded"
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-        {/* Orders Placeholder */}
-        <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
-          <h2 className="text-xl font-semibold text-darkGreen font-kalnia mb-2">
-            📦 Orders
-          </h2>
-          <p className="text-gray-600">
-            This section will display all orders related to this restaurant.
-          </p>
-          <p className="text-sm text-gray-500">
-            We'll implement this after integrating with the Order Service.
-          </p>
-        </div>
-
-        {/* Delete Restaurant */}
-        <div className="text-right mt-8">
-          <button
-            onClick={deleteRestaurant}
-            className="text-red-700 font-semibold border-4 border-red-700 px-5 py-2 rounded-md hover:bg-red-100 transition-all duration-200"
-          >
-            Delete Restaurant
-          </button>
+          {/* Delete Restaurant */}
+          <div className="text-right mt-8">
+            <button
+              onClick={deleteRestaurant}
+              className="text-red-700 font-semibold border-4 border-red-700 px-5 py-2 rounded-md hover:bg-red-100 transition-all duration-200"
+            >
+              Delete Restaurant
+            </button>
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
