@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
 
 export default function RestaurantList  () {
   const [restaurants, setRestaurants] = useState([]);
@@ -9,7 +12,8 @@ export default function RestaurantList  () {
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [openOnly, setOpenOnly] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);  
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -75,19 +79,27 @@ export default function RestaurantList  () {
   };
 
   // Filter open-only
-  const handleToggle = async () => {
+  const handleToggle = () => {
     setOpenOnly(!openOnly);
+  
     if (!openOnly) {
-      try {
-        const res = await axios.get("http://localhost:5400/restaurants/open");
-        setRestaurants(res.data);
-      } catch (err) {
-        console.error("❌ Open filter error:", err);
-      }
+      const now = new Date();
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+      const filtered = allRestaurants.filter((r) => {
+        if (r.openTime < r.closeTime) {
+          return currentTime >= r.openTime && currentTime < r.closeTime;
+        } else {
+          return currentTime >= r.openTime || currentTime < r.closeTime;
+        }
+      });
+  
+      setRestaurants(filtered);
     } else {
       setRestaurants(allRestaurants);
     }
   };
+  
 
   const handleAddFavorite = async (restaurantId) => {
     try {
@@ -109,37 +121,47 @@ export default function RestaurantList  () {
   };
 
   // ✅ Badge component to show restaurant open status
-  const OpenStatusBadge = ({ restaurantId }) => {
-    const [open, setOpen] = useState(null);
+  // ✅ Frontend-only OpenStatusBadge
+const OpenStatusBadge = ({ openTime, closeTime }) => {
+  const now = new Date();
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
-    useEffect(() => {
-      axios
-        .get(`http://localhost:5400/restaurants/${restaurantId}/status`)
-        .then((res) => setOpen(res.data.isOpen))
-        .catch((err) => console.error("❌ Open status error:", err));
-    }, [restaurantId]);
-
-    return open !== null ? (
-      <div
-        className={`absolute top-2 right-2 px-2 py-2 text-[12px] font-semibold rounded-full shadow ${
-          open ? "bg-green-600" : "bg-red-500"
-        } text-white`}
-      >
-        {open ? "Open now" : "Closed"}
-      </div>
-    ) : null;
-  };
+  let isOpen = false;
+  if (openTime < closeTime) {
+    isOpen = currentTime >= openTime && currentTime < closeTime;
+  } else {
+    isOpen = currentTime >= openTime || currentTime < closeTime;
+  }
 
   return (
     <div
-      className="min-h-screen bg-repeat bg-center bg-fixed p-6"
+      className={`absolute top-2 right-2 px-2 py-2 text-[12px] font-semibold rounded-full shadow ${
+        isOpen ? "bg-green-600" : "bg-red-500"
+      } text-white`}
+    >
+      {isOpen ? "Open now" : "Closed"}
+    </div>
+  );
+};
+
+
+  return (
+    <div
+    className="flex min-h-screen flex-col"
       style={{
-        backgroundImage: `url('/bg.jpg')`,
+        backgroundImage: `url('/images/bg.png')`,
         backgroundSize: "cover",
-        backgroundRepeat: "repeat",
-        backgroundPosition: "top center",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Header */}
+      <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
+      {/* Sidebar + Main Content */}
+      <div className="flex flex-1">
+        <Sidebar role="Customer" isOpen={sidebarOpen} />
+
       {/* Inner content wrapper with padding all around */}
       <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
         {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
@@ -201,10 +223,9 @@ export default function RestaurantList  () {
                       alt={r.name}
                       className="h-[200px] w-full object-cover rounded-t-2xl transition-transform duration-300 hover:scale-105"
                     />
-                    <OpenStatusBadge restaurantId={r._id} />
-                  </div>
+                    <OpenStatusBadge openTime={r.openTime} closeTime={r.closeTime} />
 
-                  <OpenStatusBadge restaurantId={r._id} />
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation(); // ✅ Prevents card click
@@ -243,6 +264,9 @@ export default function RestaurantList  () {
           </div>
         )}
       </div>
+    </div>
+
+    <Footer />
     </div>
   );
 };

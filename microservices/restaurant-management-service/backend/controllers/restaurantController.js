@@ -35,7 +35,7 @@ const registerRestaurant = async (req, res) => {
     const savedRestaurant = await newRestaurant.save();
 
     //Send notifcation to admin service
-    await axios.post("http://localhost:5100/admin/notifications", {
+    await axios.post("http://admin-service:5100/admin/notifications", {
       message: `New Restaurant registered: ${savedRestaurant.name}`,
       type: "info",
     });
@@ -98,16 +98,16 @@ const updateRestaurantStatus = async (req, res) => {
 
     //Auto-notification to admin
     if (status === "approved" || status === "rejected") {
-      await axios.post("http://localhost:5100/admin/notifications", {
+      await axios.post("http://admin-service:5100/admin/notifications", {
         message: `Restaurant ${status}: ${updated.name}`,
         type: status === "approved" ? "success" : "warning",
       });
     }
 
     //Notify the restaurant owner
-    await axios.post("http://localhost:5000/restaurant-notifications", {
+    await axios.post("http://restaurant-management-service:5000/restaurant-notifications", {
       restaurantId: updated._id,
-      message: `Your restaurant was ${status} by the system admin.`,
+      message: `Your restaurant, ${restaurant.name}, was ${status} by the system admin.`,
       type: status === "approved" ? "success" : "warning",
     });
 

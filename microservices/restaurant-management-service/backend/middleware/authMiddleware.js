@@ -9,7 +9,7 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     //Call the user service to get full user data
-    const response = await axios.get(`http://localhost:5000/api/user/profile`, {
+    const response = await axios.get(`http://user-management-service:5000/api/user/profile`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

@@ -69,7 +69,7 @@ function App() {
 
         {/*Dashboards for driver role */}
       </Routes>
-      <ToastContainer autoClose={2500} />
+      <ToastContainer autoClose={1500} />
     </Router>
   );
 }
