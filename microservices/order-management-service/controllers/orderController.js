@@ -80,14 +80,19 @@ const processRefund = async(req, res) => {
 
 //view order history
 const getOrderHistory = async (req, res) => {
-    const { customerId } = req.body;
+    const { customerId } = req.query; // read from query params
+
+    if (!customerId) {
+        return res.status(400).json({ message: "Customer ID is required" });
+    }
 
     try {
-        const orders = await Order.find({customerId}).sort({createdAt: -1});
+        const orders = await Order.find({ customerId }).sort({ createdAt: -1 });
 
-        if(!orders || orders.length === 0) {
+        if (!orders || orders.length === 0) {
             return res.status(404).json({ message: "No orders found" });
         }
+
         res.status(200).json({ message: "Order history retrieved successfully", orders });
     } catch (err) {
         console.error(err);
@@ -95,9 +100,61 @@ const getOrderHistory = async (req, res) => {
     }
 };
 
+// update order status
+const updateOrderStatus = async (req, res) => {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = ['Pending', 'Completed', 'Preparing', 'Sent to Deliver', 'Delivered', 'Canceled'];
+
+    if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    try {
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        order.status = status;
+        await order.save();
+
+        res.status(200).json({ message: "Order status updated successfully", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+// Get all orders for a specific restaurant
+const getAllOrders = async (req, res) => {
+    try {
+        // Fetch all orders from the database
+        const orders = await Order.find().sort({ createdAt: -1 }); // Optionally, sort by creation date
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: "No orders found" });
+        }
+
+        res.status(200).json({
+            message: "All orders retrieved successfully",
+            orders,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 module.exports = {
     createOrder,
     viewOrder,
     processRefund,
-    getOrderHistory
+    getOrderHistory,
+    getAllOrders,
+    updateOrderStatus,
 };
