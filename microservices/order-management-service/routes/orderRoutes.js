@@ -8,11 +8,10 @@ const {
     getOrderHistory
 } = require('../controllers/orderController');
 
-const verifyToken = require('../middleware/authMiddleware');
 
-router.post('/create', verifyToken, createOrder);
-router.get('/:id', verifyToken, viewOrder);
-router.put('/:id/refund', verifyToken, processRefund);
-router.get('/history/all', verifyToken, getOrderHistory);
+router.post('/create', createOrder);
+router.get('/:id', viewOrder);
+router.put('/:id/refund', processRefund);
+router.get('/history/all', getOrderHistory);
 
 module.exports = router;

@@ -20,7 +20,7 @@ const Sidebar = ({ role, isOpen }) => {
       localStorage.removeItem("role");
 
       // Redirect to login
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Error during logout:", err);
     }
@@ -29,20 +29,15 @@ const Sidebar = ({ role, isOpen }) => {
   const navItems = {
     Customer: [
       { name: 'Dashboard', icon: FaHome, path: '/customer/dashboard' },
-      { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants/approved' },
+      { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants' },
       { name: 'Orders', icon: FaListAlt, path: '/customer/orders' },
       { name: 'Offers', icon: FaTags, path: '/customer/offers' },
       { name: 'Profile', icon: FaUserAlt, path: '/profile' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],
     Admin: [
-      { name: 'Dashboard', icon: FaHome, path: '/admin/dashboard' },
-      { name: 'Restaurants', icon: FaUtensils, path: '/admin/manage-restaurants' },
-      { name: 'Offers', icon: FaTags, path: '/admin/available-offers' },
-      { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
-    ],
-    RestaurantAdmin: [
-      { name: 'Dashboard', icon: FaHome, path: '/restaurant/dashboard' },
+      { name: 'Dashboard', icon: FaHome, path: '/' },
+      { name: 'Offers', icon: FaTags, path: '/available-offers' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],
   };
@@ -50,7 +45,7 @@ const Sidebar = ({ role, isOpen }) => {
   return (
     <aside
       className={`bg-gradient-to-br from-emerald-700 via-lime-600 to-green-800 text-[#103713] h-screen flex flex-col border-r-4 border-[#053002] shadow-lg
-        ${isOpen ? 'w-56' : 'w-0'}  overflow-hidden transition-all duration-300`}
+        ${isOpen ? 'w-56' : 'w-0'} overflow-hidden`}
     >
       <nav className={`flex-1 p-4 mt-16 ${isOpen ? 'block' : 'hidden'}`}>
         <ul className="space-y-14">

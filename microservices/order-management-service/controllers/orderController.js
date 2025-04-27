@@ -3,7 +3,7 @@ const Cart = require("../models/Cart");
 
 //create order after payment
 const createOrder = async (req, res) => {
-    const customerId = req.body.customerId;
+    const { customerId, customerName } = req.body;
 
     try {
         const cart = await Cart.findOne({ customerId });
@@ -14,8 +14,9 @@ const createOrder = async (req, res) => {
 
         const newOrder = new Order({
             customerId: cart.customerId,
+            customerName: customeName || cart.customerName,
             restaurantId: cart.restaurantId,
-            currencyCode: 'USD',
+            currencyCode: cart.currencyCode,
             items: cart.items,
             totalPrice: cart.totalPrice,
             status: 'Pending',
@@ -24,6 +25,7 @@ const createOrder = async (req, res) => {
 
         await newOrder.save();
         await Cart.deleteOne({ customerId });
+
         res.status(201).json({ message: "Order created successfully", order: newOrder });
     } catch (err) {
         console.error(err);
@@ -78,7 +80,7 @@ const processRefund = async(req, res) => {
 
 //view order history
 const getOrderHistory = async (req, res) => {
-    const customerId = req.userId;
+    const { customerId } = req.body;
 
     try {
         const orders = await Order.find({customerId}).sort({createdAt: -1});

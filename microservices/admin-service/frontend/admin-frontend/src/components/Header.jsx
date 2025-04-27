@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate(); 
   return (
-    <header className="bg-darkGreen text-[#FFFDF5] flex items-center justify-between p-3 shadow-lg font-[Kalnia]">
+    <header className="bg-darkGreen text-[#FFFDF5] flex items-center justify-between p-4 shadow-lg font-[Kalnia]">
       {/* Left side: Sidebar toggle + logo */}
       <div className="flex items-center gap-4">
         <button
@@ -35,7 +35,7 @@ const Header = ({ toggleSidebar }) => {
         {/* Notifications icon with redirect to notifications page */}
         <FaBell
           className="cursor-pointer hover:text-[#FFD700]"
-          onClick={() => navigate("/notification/viewNotification")}
+          onClick={() => navigate("/notifications")}
         />
 
         {/* Cart icon */}
@@ -44,10 +44,7 @@ const Header = ({ toggleSidebar }) => {
          />
 
         {/* Profile icon with redirect to view profile page */}
-        <BsPersonCircle
-          className="cursor-pointer hover:text-[#FFD700]"
-          onClick={() => navigate("/profile")}
-        />
+        
       </div>
     </header>
   );

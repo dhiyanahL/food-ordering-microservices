@@ -2,7 +2,7 @@ import LoginForm from "../components/LoginForm";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 export default function Login() {
   const navigate = useNavigate();
 
@@ -16,6 +16,10 @@ export default function Login() {
       const { token, user } = res.data;
       localStorage.setItem("token", token);
       localStorage.setItem("role", user.role);
+      localStorage.setItem("userId", user._id);
+      localStorage.setItem("userName", user.name);
+
+      toast.success("Login successful!");
 
       //ROLE BASED DASHBOARD REDIRECT
       // Redirect based on role - DASHBOARD REDIRECT 
@@ -36,10 +40,7 @@ export default function Login() {
           navigate("/");
       }
     } catch (err) {
-      //alert("Login failed: " + err.response?.data?.message || err.message);
-      console.error("Error during login:", err);
-      alert("Login failed: " + (err.response?.data?.message || err.message || "Unknown error"));
-  
+      toast.error("Login failed: " + (err.response?.data?.message || err.message));
     }
   };
 
