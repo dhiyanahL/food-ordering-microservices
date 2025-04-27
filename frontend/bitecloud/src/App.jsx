@@ -80,18 +80,14 @@ function App() {
         <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
         <Route path="/order-history" element={<OrderHistoryPage />} />
 
-<<<<<<< HEAD
 
         {/* Dashboards for restaurant admin role */}
         <Route path="/restaurant/dashboard" element={<RestaurantAdminDashboard />} />
         <Route path="/restaurant/dashboard/:restaurantId" element={<RestaurantDetailDashboard />} />
 
-        <Route path = "/payment/checkout" element = {<StripePayment/>}/>
+        <Route path ="/payment/checkout" element = {<StripePayment/>}/>
         
         <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
-=======
-        {/*Dashboards for driver role */}
->>>>>>> 22ff78cf466c5322649d0abc62c7c1d1363f6e6c
       </Routes>
       <ToastContainer autoClose={1500} />
     </Router>
