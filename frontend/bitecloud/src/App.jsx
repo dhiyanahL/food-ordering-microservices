@@ -26,7 +26,7 @@ function App() {
         <Route path="/profile" element={<ViewProfile />} />
         {/* Dashboards for each user role */}
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-        <Route path="/customer/restaurants" element={<RestaurantList />} />
+        <Route path="/customer/restaurants/approved" element={<RestaurantList />} />
         <Route path="/customer/restaurants/:restaurantId/menu" element={<MenuPage />} />
         
         {/* Dashboards for admin role */}
