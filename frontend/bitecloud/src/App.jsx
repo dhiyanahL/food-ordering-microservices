@@ -13,6 +13,7 @@ import AddOfferForm from './pages/AddOfferForm'
 import AvailableOffers from './pages/AvailableOffers'
 import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
+import ManageRestaurants from "./pages/dashboards/SystemAdminMngRestaurants";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
         <Route path="/profile" element={<ViewProfile />} />
         {/* Dashboards for each user role */}
         <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-        <Route path="/customer/restaurants" element={<RestaurantList />} />
+        <Route path="/customer/restaurants/approved" element={<RestaurantList />} />
         <Route path="/customer/restaurants/:restaurantId/menu" element={<MenuPage />} />
         
         {/* Dashboards for admin role */}
@@ -33,6 +34,7 @@ function App() {
         <Route path="/admin/available-offers" element={<AvailableOffers />} />
         <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/manage-restaurants" element={<ManageRestaurants/>}/>
 
 
         {/* Dashboards for restaurant admin role */}

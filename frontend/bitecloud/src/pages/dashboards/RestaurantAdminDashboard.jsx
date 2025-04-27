@@ -143,7 +143,7 @@ export default function RestaurantDashboard() {
     }}
   >
     {/* Inner content wrapper with padding all around */}
-    <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
+    <div className="w-[75%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
       {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
       <h1 className="text-4xl font-bold text-darkGreen font-kalnia mb-4 text-center">
         Restaurant Owner Dashboard

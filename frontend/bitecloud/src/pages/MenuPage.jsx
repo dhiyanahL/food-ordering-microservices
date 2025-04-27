@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
 
 export default function MenuPage() {
   const { restaurantId } = useParams();
@@ -13,6 +16,7 @@ export default function MenuPage() {
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
   const [quantityInputs, setQuantityInputs] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load menu items
   const fetchMenu = async () => {
@@ -69,23 +73,20 @@ export default function MenuPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Restaurant Details
         const restaurantRes = await axios.get(
           `http://localhost:5400/restaurants/${restaurantId}`
         );
         setRestaurantDetails(restaurantRes.data);
 
-        // Open Status
-        const statusRes = await axios.get(
-          `http://localhost:5400/restaurants/${restaurantId}/status`
+        const isOpen = calculateIsOpen(
+          restaurantRes.data.openTime,
+          restaurantRes.data.closeTime
         );
-        setIsRestaurantOpen(statusRes.data.isOpen);
+        setIsRestaurantOpen(isOpen);
       } catch (err) {
         console.error("❌ Error loading restaurant info:", err);
-        setIsRestaurantOpen(false);
       }
 
-      // Menu logic
       try {
         const baseUrl = `http://localhost:5400/restaurants/${restaurantId}/menu`;
         let items = [];
@@ -117,6 +118,22 @@ export default function MenuPage() {
 
     loadData();
   }, [query, restaurantId, availableOnly, discountedOnly]);
+
+  // ✅ Function to check if the restaurant is currently open
+  const calculateIsOpen = (openTime, closeTime) => {
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, "0")}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+
+    if (openTime < closeTime) {
+      return currentTime >= openTime && currentTime < closeTime;
+    } else {
+      // Handles overnight timings (eg: 6PM - 2AM)
+      return currentTime >= openTime || currentTime < closeTime;
+    }
+  };
 
   const handleQuantityChange = (itemId, value) => {
     const qty = parseInt(value, 10);
@@ -174,19 +191,26 @@ export default function MenuPage() {
 
   return (
     <div
-      className="min-h-screen bg-repeat bg-center bg-fixed p-6"
+    className="flex min-h-screen flex-col"
       style={{
-        backgroundImage: `url('/bg.jpg')`,
+        backgroundImage: `url('/images/bg.png')`,
         backgroundSize: "cover",
-        backgroundRepeat: "repeat",
-        backgroundPosition: "top center",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Header */}
+      <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
+      {/* Sidebar + Main Content */}
+      <div className="flex flex-1">
+        <Sidebar role="Customer" isOpen={sidebarOpen} />
+      
       {/* Inner content wrapper with padding all around */}
       <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
         {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
         <button
-          onClick={() => navigate("/restaurants")}
+          onClick={() => navigate("/customer/restaurants/approved")}
           className="mb-6 bg-darkGreen text-white px-4 py-2 rounded hover:bg-oliveGreen"
         >
           ← Back to Restaurants
@@ -203,7 +227,13 @@ export default function MenuPage() {
                 alt={restaurantDetails.name}
                 className="h-[300px] w-[400px] object-cover rounded-xl shadow"
               />
+
               <div className="flex-1">
+                {!isRestaurantOpen && (
+                  <span className="bg-red-600 text-white text-[11px] font-bold px-5 py-1 rounded-full shadow-md tracking-wide uppercase">
+                    Closed
+                  </span>
+                )} 
                 <h2 className="text-3xl font-kalnia font-bold mb-2">
                   {restaurantDetails.name}
                 </h2>
@@ -338,6 +368,8 @@ export default function MenuPage() {
           </div>
         )}
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

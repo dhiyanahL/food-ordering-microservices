@@ -20,7 +20,7 @@ const Sidebar = ({ role, isOpen }) => {
       localStorage.removeItem("role");
 
       // Redirect to login
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Error during logout:", err);
     }
@@ -29,16 +29,15 @@ const Sidebar = ({ role, isOpen }) => {
   const navItems = {
     Customer: [
       { name: 'Dashboard', icon: FaHome, path: '/customer/dashboard' },
-      { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants/approved' },
+      { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants' },
       { name: 'Orders', icon: FaListAlt, path: '/customer/orders' },
       { name: 'Offers', icon: FaTags, path: '/customer/offers' },
       { name: 'Profile', icon: FaUserAlt, path: '/profile' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],
     Admin: [
-      { name: 'Dashboard', icon: FaHome, path: '/admin/dashboard' },
-      { name: 'Restaurants', icon: FaUtensils, path: '/admin/manage-restaurants' },
-      { name: 'Offers', icon: FaTags, path: '/admin/available-offers' },
+      { name: 'Dashboard', icon: FaHome, path: '/' },
+      { name: 'Offers', icon: FaTags, path: '/available-offers' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],
   };
