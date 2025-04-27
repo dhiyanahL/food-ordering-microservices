@@ -24,8 +24,22 @@ services:
       
     depends_on:
     - mongo
-    
 
+  admin-service:
+    build: ./microservices/admin-service/backend
+    container_name: admin-service
+    ports:
+      - '5100:5100'
+
+    env_file:
+    - ./microservices/admin-service/backend/.env
+  
+    environment:
+      - MONGODB_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/admin-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      
+    depends_on:
+    - mongo
+    
   restaurant-management-service:
     build: ./microservices/restaurant-management-service/backend
     container_name: restaurant-management-service
@@ -93,7 +107,6 @@ services:
     container_name: payment-service
     ports:
       - '5300:5300'
-
     env_file: 
     - ./microservices/payment-service/project-PaymentService/project-PaymentService/backend/.env
     environment:
@@ -102,5 +115,5 @@ services:
     depends_on:
       - mongo
 
-   
+volumes:
   mongo_data:
