@@ -29,7 +29,7 @@ const Sidebar = ({ role, isOpen }) => {
   const navItems = {
     Customer: [
       { name: 'Dashboard', icon: FaHome, path: '/customer/dashboard' },
-      { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants' },
+      { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants/approved' },
       { name: 'Orders', icon: FaListAlt, path: '/customer/orders' },
       { name: 'Offers', icon: FaTags, path: '/customer/offers' },
       { name: 'Profile', icon: FaUserAlt, path: '/profile' },

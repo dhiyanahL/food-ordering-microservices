@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
 
 export default function MenuPage() {
   const { restaurantId } = useParams();
@@ -13,6 +16,7 @@ export default function MenuPage() {
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
   const [quantityInputs, setQuantityInputs] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load menu items
   const fetchMenu = async () => {
@@ -187,14 +191,21 @@ export default function MenuPage() {
 
   return (
     <div
-      className="min-h-screen bg-repeat bg-center bg-fixed p-6"
+    className="flex min-h-screen flex-col"
       style={{
-        backgroundImage: `url('/bg.jpg')`,
+        backgroundImage: `url('/images/bg.png')`,
         backgroundSize: "cover",
-        backgroundRepeat: "repeat",
-        backgroundPosition: "top center",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Header */}
+      <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
+      {/* Sidebar + Main Content */}
+      <div className="flex flex-1">
+        <Sidebar role="Customer" isOpen={sidebarOpen} />
+      
       {/* Inner content wrapper with padding all around */}
       <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
         {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
@@ -357,6 +368,8 @@ export default function MenuPage() {
           </div>
         )}
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

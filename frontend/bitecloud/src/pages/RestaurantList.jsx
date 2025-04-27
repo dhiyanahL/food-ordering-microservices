@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar";
 
 export default function RestaurantList  () {
   const [restaurants, setRestaurants] = useState([]);
@@ -9,7 +12,8 @@ export default function RestaurantList  () {
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [openOnly, setOpenOnly] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);  
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -75,19 +79,27 @@ export default function RestaurantList  () {
   };
 
   // Filter open-only
-  const handleToggle = async () => {
+  const handleToggle = () => {
     setOpenOnly(!openOnly);
+  
     if (!openOnly) {
-      try {
-        const res = await axios.get("http://localhost:5400/restaurants/open");
-        setRestaurants(res.data);
-      } catch (err) {
-        console.error("❌ Open filter error:", err);
-      }
+      const now = new Date();
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+      const filtered = allRestaurants.filter((r) => {
+        if (r.openTime < r.closeTime) {
+          return currentTime >= r.openTime && currentTime < r.closeTime;
+        } else {
+          return currentTime >= r.openTime || currentTime < r.closeTime;
+        }
+      });
+  
+      setRestaurants(filtered);
     } else {
       setRestaurants(allRestaurants);
     }
   };
+  
 
   const handleAddFavorite = async (restaurantId) => {
     try {
@@ -135,14 +147,21 @@ const OpenStatusBadge = ({ openTime, closeTime }) => {
 
   return (
     <div
-      className="min-h-screen bg-repeat bg-center bg-fixed p-6"
+    className="flex min-h-screen flex-col"
       style={{
-        backgroundImage: `url('/bg.jpg')`,
+        backgroundImage: `url('/images/bg.png')`,
         backgroundSize: "cover",
-        backgroundRepeat: "repeat",
-        backgroundPosition: "top center",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Header */}
+      <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
+      {/* Sidebar + Main Content */}
+      <div className="flex flex-1">
+        <Sidebar role="Customer" isOpen={sidebarOpen} />
+
       {/* Inner content wrapper with padding all around */}
       <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
         {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
@@ -245,6 +264,9 @@ const OpenStatusBadge = ({ openTime, closeTime }) => {
           </div>
         )}
       </div>
+    </div>
+
+    <Footer />
     </div>
   );
 };
