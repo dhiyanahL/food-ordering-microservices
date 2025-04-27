@@ -1,257 +1,210 @@
-
-import React, {useState, useEffect} from 'react';
-import {loadStripe} from '@stripe/stripe-js';
-import {Elements,CardElement,useStripe,useElements,  CardNumberElement,
-  CardExpiryElement,
-  CardCvcElement,} from '@stripe/react-stripe-js';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
-const stripePromise = loadStripe('pk_test_51R7BxcCBxogx844uoIAybAnwKxST2s0masN22BgkqMpLjD5RkqIHDYIwDT2QedEN7gZZrQA9fI0hsGCtI6vnxdwu00SK0KxCx4');
+const CheckoutPage = () => {
+  const [order, setOrder] = useState(null);
+  const [customer, setCustomer] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const customerId = localStorage.getItem('customerId');
 
-const CARD_OPTIONS = {
-  style: {
-    base: {
-      fontSize: "16px",
-      color: "#111827",
-      letterSpacing: "0.025em",
-      fontFamily: "monospace",
-      "::placeholder": {
-        color: "#9ca3af",
-      },
-    },
-    invalid: {
-      color: "#ef4444",
-    },
-  },
-};
-
-const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
-
-    const stripe = useStripe();
-    const elements = useElements();
-    const[loading, setLoading] = useState(false);
-    const [brand, setBrand] = useState("");
-    const[message,setMessage] = useState('');
-    
-
-    
-
-    const handleSubmit =async (e)=>{
-
-        e.preventDefault();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         setLoading(true);
-
-
-
-        totalAmount = totalAmount * 293;
-        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : 2000, currency : "USD"});
         
-    const result = await stripe.confirmCardPayment(data.clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardNumberElement),
-        },
-      });
-  
-      
-      if (result.error) {
-        setMessage(result.error.message);
-      } else {
-        setMessage("Payment successful! 🎉 ");
+        // 1. Get cart data from order service (port 5500)
+        const cartResponse = await axios.get(`http://localhost:5500/api/cart/${customerId}`);
+        const cartData = cartResponse.data.cart;
+        
+        // 2. Get customer details from user service (port 5000)
+        const userResponse = await axios.get(`http://localhost:5000/api/users/${customerId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt')}`
+          }
+        });
+        const userData = userResponse.data.user;
+
+        // 3. Set state with real data
+        setOrder({
+          items: cartData.items,
+          totalPrice: cartData.totalPrice,
+          restaurantId: cartData.restaurantId
+        });
+
+        setCustomer({
+          name: userData.name,
+          address: userData.address || 'Address not specified',
+          phone: userData.phone || 'Phone not specified',
+          email: userData.email
+        });
+
+      } catch (err) {
+        console.error('Error fetching checkout data:', err);
+        setError('Failed to load checkout information');
+      } finally {
+        setLoading(false);
       }
-  
-      setLoading(false);
+    };
 
+    fetchData();
+  }, [customerId]);
 
-
-      if(result && result.paymentIntent && result.paymentIntent.status === "succeeded") {
-
-
-        try {
-          const statusRes = await axios.post('http://localhost:5300/api/Payment/checkPaymentStatus', {
-            paymentIntentId: result.paymentIntent.id,
-            userId : "L1234",
-            cartId : "C1234",
-            restaurantId : "res1234"
-
-          });
-      
-          console.log("Payment Status:", statusRes.data.status);
-      
-      
-        } catch (err) {
-          console.error("Error checking payment status:", err);
+  const handlePayment = async () => {
+    try {
+      // Create order and get payment link
+      const res = await axios.post(
+        'http://localhost:5500/api/cart/checkout',
+        { customerId },
+        {
+          headers: { 
+            Authorization: `Bearer ${localStorage.getItem('jwt')}` 
+          }
         }
-    
-      }
-
+      );
       
-
-
-
+      // Redirect to payment gateway
+      window.location.href = res.data.paymentLink;
+    } catch (err) {
+      console.error('Payment error:', err);
+      setError('Failed to process payment');
     }
+  };
 
-    const handleBrand = (event) => {
-      setBrand(event.brand);
-    };
+  const handleCancelOrder = async () => {
+    try {
+      await axios.delete(`http://localhost:5500/api/cart/clear`, {
+        data: { customerId },
+        headers: { 
+          Authorization: `Bearer ${localStorage.getItem('jwt')}` 
+        }
+      });
+      navigate('/customer/dashboard');
+    } catch (err) {
+      console.error('Error cancelling order:', err);
+      setError('Failed to cancel order');
+    }
+  };
 
-    const getBrandLogo = () => {
-      switch (brand) {
-        case "visa":
-          return "https://img.icons8.com/color/48/000000/visa.png";
-        case "mastercard":
-          return "https://img.icons8.com/color/48/000000/mastercard-logo.png";
-        case "amex":
-          return "https://img.icons8.com/color/48/000000/amex.png";
-        default:
-          return null;
-      }
-    };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
+        <Header />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+            <p className="text-gray-600">Loading your order details...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
+        <Header />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+            <p className="text-red-500">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
-    
+  if (!order || !customer) {
+    return (
+      <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
+        <Header />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+            <p className="text-gray-600">No order information available</p>
+            <button
+              onClick={() => navigate('/customer/restaurants')}
+              className="mt-4 px-4 py-2 bg-[#628b35] text-white rounded hover:bg-[#4a6b2a]"
+            >
+              Browse Restaurants
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <form
-    onSubmit={handleSubmit}
-   className="w-[580px] mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl border border-gray-200"
-  >
-    <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
-      💳 Secure Checkout
-    </h2>
+    <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
+      <Header />
 
-    <h2 className='text-left'> Pay With</h2>
-    <div className="flex items-center gap-2">
-  <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" className="h-9 w-9 "/>
-  <img src="https://img.icons8.com/color/48/000000/mastercard-logo.png" alt="Master Card" className="h-9 w-9"/>
-  <img src="https://img.icons8.com/color/48/000000/amex.png" alt="Amex" className="h-9 w-9" />
-</div>
+      <div className="flex flex-1 justify-center">
+        <div className="w-full max-w-4xl p-8 bg-white shadow-lg rounded-xl mt-8 mb-16">
+          <h2 className="text-3xl font-bold text-[#103713] mb-6">Confirm Your Order</h2>
 
+          {/* Order Summary */}
+          <div className="order-details mb-6">
+            <h3 className="text-xl font-semibold text-[#628b35] mb-4">Order Summary</h3>
+            {order.items.map(item => (
+              <div key={item.itemId} className="flex justify-between mb-3">
+                <p>{item.itemName} × {item.quantity}</p>
+                <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+              </div>
+            ))}
+            <div className="order-total border-t pt-4 mt-4">
+              <h3 className="text-xl font-bold text-[#103713]">Total: ${order.totalPrice.toFixed(2)}</h3>
+            </div>
+          </div>
 
-    
+          {/* Customer Details */}
+          <div className="customer-details mb-6">
+            <h3 className="text-xl font-semibold text-[#628b35] mb-4">Delivery Information</h3>
+            <div className="space-y-2">
+              <p><strong>Name:</strong> {customer.name}</p>
+              <p><strong>Email:</strong> {customer.email}</p>
+              <p><strong>Address:</strong> {customer.address}</p>
+              <p><strong>Phone:</strong> {customer.phone}</p>
+            </div>
+            <button
+              onClick={() => navigate('/customer/profile')}
+              className="mt-3 text-blue-500 hover:text-blue-700"
+            >
+              Update Delivery Information
+            </button>
+          </div>
 
-  
-    <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1 text-left">
-          Card Number
-        </label>
-        <div className="p-3 border border-gray-300 rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500 transition">
-          <CardNumberElement
-           options={CARD_OPTIONS} 
-           onChange={handleBrand} />
-               {brand && (
-        <div className="flex justify-end">
-          <img src={getBrandLogo()} alt={brand} className="h-8" />
-        </div>
-      )}
-
-        
+          {/* Payment and Cancel buttons */}
+          <div className="action-buttons mt-8 flex justify-between">
+            <button
+              onClick={handlePayment}
+              className="py-2 px-6 bg-[#628b35] text-white rounded-lg hover:bg-[#4a6b2a] transition-colors"
+            >
+              Proceed to Payment
+            </button>
+            <button
+              onClick={handleCancelOrder}
+              className="py-2 px-6 border border-[#D9534F] text-[#D9534F] rounded-lg hover:bg-[#F2D1D1] transition-colors"
+            >
+              Cancel Order
+            </button>
+          </div>
         </div>
       </div>
-  
-      <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1 text-left">
-          Expiry Date
-        </label>
-        <div className="p-3 border border-gray-300 rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500 transition">
-          <CardExpiryElement options={CARD_OPTIONS} />
-        </div>
-      </div>
-  
-      <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1 text-left">
-          CVC
-        </label>
-        <div className="p-3 border border-gray-300 rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500 transition">
-          <CardCvcElement options={CARD_OPTIONS} />
-        </div>
-      </div>
+
+      <Footer />
     </div>
-  
-    <button
-  type="submit"
-  disabled={!stripe || loading}
-  style={{
-    width: '100%',
-    color: 'white',
-    fontWeight: '600',
-    padding: '10px 16px',
-    borderRadius: '8px',
-    marginTop: '16px',
-    transition: 'background-color 0.3s ease',
-    backgroundColor: !stripe || loading ? '#67AE6E' : '#87A922', // light green if disabled, dark green if enabled
-    cursor: !stripe || loading ? 'not-allowed' : 'pointer',
-    opacity: !stripe || loading ? 0.6 : 1,
-    border: 'none',
-  }}
->
-  {loading ? 'Processing...' : 'Pay 2000'}
-</button>
-
-
-{message && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      height: "100vh",
-      width: "100vw",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 9999,
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: "white",
-        padding: "30px",
-        borderRadius: "12px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-        textAlign: "center",
-        maxWidth: "400px",
-        width: "90%",
-      }}
-    >
-      <p
-        style={{
-          color: message.includes("successful") ? "#16a34a" : "#dc2626",
-          fontSize: "16px",
-          marginBottom: "20px",
-        }}
-      >
-        {message}
-      </p>
-      <button
-        onClick={() => setMessage("")}
-        style={{
-          backgroundColor: "#16a34a",
-          color: "white",
-          padding: "10px 20px",
-          borderRadius: "8px",
-          border: "none",
-          fontWeight: "bold",
-          cursor: "pointer",
-        }}
-      >
-        Okay
-      </button>
-    </div>
-  </div>
-)}
-
-
-  </form>
-  
   );
 };
 
-const StripePayment = ({totalAmount}) => (
-    <Elements stripe={stripePromise}>
-        <CheckoutForm totalAmount={totalAmount}/>
-    </Elements>
-);
-
-
-export default StripePayment;
+export default CheckoutPage;
