@@ -54,3 +54,5 @@ const Map = ({ drivers, restaurants, onSelectOrder }) => {
     </GoogleMap>
   );
 };
+
+export default Map;

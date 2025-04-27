@@ -19,9 +19,6 @@ import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import StripePayment from "./pages/CheckoutForm";
 import NotificationComponent from "./pages/NotificationComponent";
-
-
-
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
@@ -48,23 +45,14 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["Customer"]} />}>
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/restaurants" element={<RestaurantList />} />
-          <Route
-            path="/customer/restaurants/:restaurantId/menu"
-            element={<MenuPage />}
-          />
+          <Route path="/customer/restaurants/:restaurantId/menu"element={<MenuPage />}/>
           <Route path="/customer/orders" element={<OrderHistoryPage />} />
         </Route>
 
         {/* Restaurant Admin Allowed Routes */}
         <Route element={<ProtectedRoute allowedRoles={["RestaurantAdmin"]} />}>
-          <Route
-            path="/restaurant/dashboard"
-            element={<RestaurantAdminDashboard />}
-          />
-          <Route
-            path="/restaurant/dashboard/:restaurantId"
-            element={<RestaurantDetailDashboard />}
-          />
+          <Route path="/restaurant/dashboard"element={<RestaurantAdminDashboard />}/>
+          <Route path="/restaurant/dashboard/:restaurantId"element={<RestaurantDetailDashboard />}/>
         </Route>
 
         {/* Dashboards for admin role */}
