@@ -109,26 +109,29 @@ export default function RestaurantList  () {
   };
 
   // ✅ Badge component to show restaurant open status
-  const OpenStatusBadge = ({ restaurantId }) => {
-    const [open, setOpen] = useState(null);
+  // ✅ Frontend-only OpenStatusBadge
+const OpenStatusBadge = ({ openTime, closeTime }) => {
+  const now = new Date();
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
-    useEffect(() => {
-      axios
-        .get(`http://localhost:5400/restaurants/${restaurantId}/status`)
-        .then((res) => setOpen(res.data.isOpen))
-        .catch((err) => console.error("❌ Open status error:", err));
-    }, [restaurantId]);
+  let isOpen = false;
+  if (openTime < closeTime) {
+    isOpen = currentTime >= openTime && currentTime < closeTime;
+  } else {
+    isOpen = currentTime >= openTime || currentTime < closeTime;
+  }
 
-    return open !== null ? (
-      <div
-        className={`absolute top-2 right-2 px-2 py-2 text-[12px] font-semibold rounded-full shadow ${
-          open ? "bg-green-600" : "bg-red-500"
-        } text-white`}
-      >
-        {open ? "Open now" : "Closed"}
-      </div>
-    ) : null;
-  };
+  return (
+    <div
+      className={`absolute top-2 right-2 px-2 py-2 text-[12px] font-semibold rounded-full shadow ${
+        isOpen ? "bg-green-600" : "bg-red-500"
+      } text-white`}
+    >
+      {isOpen ? "Open now" : "Closed"}
+    </div>
+  );
+};
+
 
   return (
     <div
@@ -201,10 +204,9 @@ export default function RestaurantList  () {
                       alt={r.name}
                       className="h-[200px] w-full object-cover rounded-t-2xl transition-transform duration-300 hover:scale-105"
                     />
-                    <OpenStatusBadge restaurantId={r._id} />
-                  </div>
+                    <OpenStatusBadge openTime={r.openTime} closeTime={r.closeTime} />
 
-                  <OpenStatusBadge restaurantId={r._id} />
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation(); // ✅ Prevents card click

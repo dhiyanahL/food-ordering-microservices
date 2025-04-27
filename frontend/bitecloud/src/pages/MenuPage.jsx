@@ -69,27 +69,24 @@ export default function MenuPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Restaurant Details
         const restaurantRes = await axios.get(
           `http://localhost:5400/restaurants/${restaurantId}`
         );
         setRestaurantDetails(restaurantRes.data);
-
-        // Open Status
-        const statusRes = await axios.get(
-          `http://localhost:5400/restaurants/${restaurantId}/status`
+  
+        const isOpen = calculateIsOpen(
+          restaurantRes.data.openTime,
+          restaurantRes.data.closeTime
         );
-        setIsRestaurantOpen(statusRes.data.isOpen);
+        setIsRestaurantOpen(isOpen);
       } catch (err) {
         console.error("❌ Error loading restaurant info:", err);
-        setIsRestaurantOpen(false);
       }
-
-      // Menu logic
+  
       try {
         const baseUrl = `http://localhost:5400/restaurants/${restaurantId}/menu`;
         let items = [];
-
+  
         if (query.trim()) {
           const searchRes = await axios.get(`${baseUrl}/search?query=${query}`);
           items = searchRes.data;
@@ -108,15 +105,29 @@ export default function MenuPage() {
           const res = await axios.get(baseUrl);
           items = res.data;
         }
-
+  
         setMenuItems(items);
       } catch (err) {
         console.error("❌ Error loading menu:", err);
       }
     };
-
+  
     loadData();
   }, [query, restaurantId, availableOnly, discountedOnly]);
+  
+  // ✅ Function to check if the restaurant is currently open
+const calculateIsOpen = (openTime, closeTime) => {
+  const now = new Date();
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+  if (openTime < closeTime) {
+    return currentTime >= openTime && currentTime < closeTime;
+  } else {
+    // Handles overnight timings (eg: 6PM - 2AM)
+    return currentTime >= openTime || currentTime < closeTime;
+  }
+};
+
 
   const handleQuantityChange = (itemId, value) => {
     const qty = parseInt(value, 10);
@@ -199,10 +210,12 @@ export default function MenuPage() {
                 src={
                   restaurantDetails.imageUrl ||
                   "https://via.placeholder.com/400x200"
+                  
                 }
                 alt={restaurantDetails.name}
                 className="h-[300px] w-[400px] object-cover rounded-xl shadow"
               />
+
               <div className="flex-1">
                 <h2 className="text-3xl font-kalnia font-bold mb-2">
                   {restaurantDetails.name}
