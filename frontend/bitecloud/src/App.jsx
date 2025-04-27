@@ -17,7 +17,11 @@ import AddOfferForm from "./pages/AddOfferForm";
 import AvailableOffers from "./pages/AvailableOffers";
 import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
-import OrderHistoryPage from "./pages/OrderHistory";
+
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
 
 //{/* Dashboards for each user role */}
 //<Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -66,6 +70,11 @@ function App() {
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
+          {/* Cart and Checkout */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
+        <Route path="/order-history" element={<OrderHistoryPage />} />
 
         {/*Dashboards for driver role */}
       </Routes>
