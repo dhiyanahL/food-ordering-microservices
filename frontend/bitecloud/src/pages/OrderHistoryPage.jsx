@@ -14,9 +14,9 @@ const OrderHistoryPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get('http://order-service/api/orders/history/all', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` }
-        });
+        const customerId = localStorage.getItem('userId'); // or wherever you're storing it
+  
+        const res = await axios.get(`http://order-service/api/orders/history?customerId=${customerId}`);
         setOrders(res.data.orders);
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -24,6 +24,7 @@ const OrderHistoryPage = () => {
     };
     fetchOrders();
   }, []);
+  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
