@@ -69,7 +69,6 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
-        <Route path="/order-history" element={<OrderHistoryPage />} />
 
         <Route path = "/payment/checkout" element = {<StripePayment/>}/>
         <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
