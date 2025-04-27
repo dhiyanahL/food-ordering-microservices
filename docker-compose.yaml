@@ -25,7 +25,7 @@ services:
     depends_on:
     - mongo
 
-    admin-service:
+  admin-service:
     build: ./microservices/admin-service/backend
     container_name: admin-service
     ports:
