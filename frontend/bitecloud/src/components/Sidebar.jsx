@@ -37,6 +37,7 @@ const Sidebar = ({ role, isOpen }) => {
     ],
     Admin: [
       { name: 'Dashboard', icon: FaHome, path: '/admin/dashboard' },
+      { name: 'Restaurants', icon: FaUtensils, path: '/admin/manage-restaurants' },
       { name: 'Offers', icon: FaTags, path: '/admin/available-offers' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],

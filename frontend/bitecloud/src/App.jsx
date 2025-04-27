@@ -13,6 +13,7 @@ import AddOfferForm from './pages/AddOfferForm'
 import AvailableOffers from './pages/AvailableOffers'
 import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
+import ManageRestaurants from "./pages/dashboards/SystemAdminMngRestaurants";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/admin/available-offers" element={<AvailableOffers />} />
         <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/manage-restaurants" element={<ManageRestaurants/>}/>
 
 
         {/* Dashboards for restaurant admin role */}
