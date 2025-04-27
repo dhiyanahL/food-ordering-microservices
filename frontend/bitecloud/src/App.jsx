@@ -17,7 +17,15 @@ import AddOfferForm from "./pages/AddOfferForm";
 import AvailableOffers from "./pages/AvailableOffers";
 import EditOfferForm from "./pages/EditOffer";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
-import OrderHistoryPage from "./pages/OrderHistory";
+import StripePayment from "./pages/CheckoutForm";
+import NotificationComponent from "./pages/NotificationComponent";
+
+
+
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
 
 //{/* Dashboards for each user role */}
 //<Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -57,8 +65,24 @@ function App() {
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
+          {/* Cart and Checkout */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
+        <Route path="/order-history" element={<OrderHistoryPage />} />
 
+<<<<<<< HEAD
+
+        {/* Dashboards for restaurant admin role */}
+        <Route path="/restaurant/dashboard" element={<RestaurantAdminDashboard />} />
+        <Route path="/restaurant/dashboard/:restaurantId" element={<RestaurantDetailDashboard />} />
+
+        <Route path = "/payment/checkout" element = {<StripePayment/>}/>
+        
+        <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
+=======
         {/*Dashboards for driver role */}
+>>>>>>> 22ff78cf466c5322649d0abc62c7c1d1363f6e6c
       </Routes>
       <ToastContainer autoClose={1500} />
     </Router>

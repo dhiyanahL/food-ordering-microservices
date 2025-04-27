@@ -35,7 +35,7 @@ const Header = ({ toggleSidebar }) => {
         {/* Notifications icon with redirect to notifications page */}
         <FaBell
           className="cursor-pointer hover:text-[#FFD700]"
-          onClick={() => navigate("/notifications")}
+          onClick={() => navigate("/notification/viewNotification")}
         />
 
         {/* Cart icon */}

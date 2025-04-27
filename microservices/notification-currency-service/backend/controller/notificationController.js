@@ -9,7 +9,7 @@ exports.createNotification = async(req,res)=>{
 
     const notification = new Notification({
 
-        userId : "123" /*userId*/ ,
+        userId : "0G1MEwKQDTpN4HONAAAL" /*userId*/ ,
         message : "User 123 you have cancelled the order 124" /*message*/,
        
 
