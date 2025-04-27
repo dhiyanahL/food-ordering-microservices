@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate(); 
   return (
-    <header className="bg-darkGreen text-[#FFFDF5] flex items-center justify-between p-4 shadow-lg font-[Kalnia]">
+    <header className="bg-darkGreen text-[#FFFDF5] flex items-center justify-between p-3 shadow-lg font-[Kalnia]">
       {/* Left side: Sidebar toggle + logo */}
       <div className="flex items-center gap-4">
         <button

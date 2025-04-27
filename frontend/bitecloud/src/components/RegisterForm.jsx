@@ -4,7 +4,8 @@ import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import Footer from "./Footer"; // 🟢 import Footer here
+import { toast } from "react-toastify";
+import Footer from "./Footer";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -43,17 +44,19 @@ export default function RegisterForm() {
       return;
     }
     try {
+
       await axios.post("http://localhost:5000/api/auth/register", formData);
+      toast.success("Registration successful!");
       navigate("/");
     } catch (error) {
-      console.error(error.response?.data?.message || "Registration failed");
+      toast.error("Registration failed: " + (error.response?.data?.message || error.message));
     }
   };
 
   const showAddress = formData.role === "Customer" || formData.role === "RestaurantAdmin";
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-gradient-to-br from-emerald-700 via-lime-600 to-green-800 px-4">
+    <div className="min-h-screen flex flex-col justify-between bg-gradient-to-br from-emerald-700 via-lime-600 to-green-800 px-0">
       <div className="flex-grow flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
@@ -183,7 +186,6 @@ export default function RegisterForm() {
         </form>
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

@@ -25,7 +25,30 @@ const admin = (req, res, next) => {
 };
 //ADD AUTHENTICATIONS FOR RES ADMIN + DELIVERY ROUTES
 
+// RestaurantAdmin middleware
+const restaurantAdmin = (req, res, next) => {
+  if (req.user && req.user.role === "RestaurantAdmin") {
+    next();
+  } else {
+    res.status(401);
+    throw new Error("Not authorized as a Restaurant Admin");
+  }
+};
+
+// DeliveryPersonnel middleware
+const deliveryPersonnel = (req, res, next) => {
+  if (req.user && req.user.role === "DeliveryPersonnel") {
+    next();
+  } else {
+    res.status(401);
+    throw new Error("Not authorized as Delivery Personnel");
+  }
+};
+
+
 module.exports = {
   authMiddleware,
   admin,
+  restaurantAdmin,
+  deliveryPersonnel
 };
