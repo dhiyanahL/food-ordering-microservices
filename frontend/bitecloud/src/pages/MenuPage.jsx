@@ -73,7 +73,7 @@ export default function MenuPage() {
           `http://localhost:5400/restaurants/${restaurantId}`
         );
         setRestaurantDetails(restaurantRes.data);
-  
+
         const isOpen = calculateIsOpen(
           restaurantRes.data.openTime,
           restaurantRes.data.closeTime
@@ -82,11 +82,11 @@ export default function MenuPage() {
       } catch (err) {
         console.error("❌ Error loading restaurant info:", err);
       }
-  
+
       try {
         const baseUrl = `http://localhost:5400/restaurants/${restaurantId}/menu`;
         let items = [];
-  
+
         if (query.trim()) {
           const searchRes = await axios.get(`${baseUrl}/search?query=${query}`);
           items = searchRes.data;
@@ -105,29 +105,31 @@ export default function MenuPage() {
           const res = await axios.get(baseUrl);
           items = res.data;
         }
-  
+
         setMenuItems(items);
       } catch (err) {
         console.error("❌ Error loading menu:", err);
       }
     };
-  
+
     loadData();
   }, [query, restaurantId, availableOnly, discountedOnly]);
-  
+
   // ✅ Function to check if the restaurant is currently open
-const calculateIsOpen = (openTime, closeTime) => {
-  const now = new Date();
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const calculateIsOpen = (openTime, closeTime) => {
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, "0")}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
 
-  if (openTime < closeTime) {
-    return currentTime >= openTime && currentTime < closeTime;
-  } else {
-    // Handles overnight timings (eg: 6PM - 2AM)
-    return currentTime >= openTime || currentTime < closeTime;
-  }
-};
-
+    if (openTime < closeTime) {
+      return currentTime >= openTime && currentTime < closeTime;
+    } else {
+      // Handles overnight timings (eg: 6PM - 2AM)
+      return currentTime >= openTime || currentTime < closeTime;
+    }
+  };
 
   const handleQuantityChange = (itemId, value) => {
     const qty = parseInt(value, 10);
@@ -210,13 +212,17 @@ const calculateIsOpen = (openTime, closeTime) => {
                 src={
                   restaurantDetails.imageUrl ||
                   "https://via.placeholder.com/400x200"
-                  
                 }
                 alt={restaurantDetails.name}
                 className="h-[300px] w-[400px] object-cover rounded-xl shadow"
               />
 
               <div className="flex-1">
+                {!isRestaurantOpen && (
+                  <span className="bg-red-600 text-white text-[11px] font-bold px-5 py-1 rounded-full shadow-md tracking-wide uppercase">
+                    Closed
+                  </span>
+                )} 
                 <h2 className="text-3xl font-kalnia font-bold mb-2">
                   {restaurantDetails.name}
                 </h2>
