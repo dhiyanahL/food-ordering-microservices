@@ -336,10 +336,10 @@ export default function MenuPage() {
                 <div className="text-oliveGreen font-semibold mb-2">
                   {item.originalPrice && item.originalPrice > item.price && (
                     <span className="line-through text-gray-500 mr-2">
-                      Rs. {item.originalPrice}
+                      $ {item.originalPrice}
                     </span>
                   )}
-                  Rs. {item.price}
+                  $ {item.price}
                 </div>
                 <div className="mb-2">
                   <label className="text-sm text-darkGreen font-medium mr-2">
