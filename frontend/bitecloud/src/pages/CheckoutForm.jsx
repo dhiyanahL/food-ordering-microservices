@@ -25,14 +25,38 @@ const CARD_OPTIONS = {
   },
 };
 
-const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
+const CheckoutForm = ()=>{
 
     const stripe = useStripe();
     const elements = useElements();
     const[loading, setLoading] = useState(false);
     const [brand, setBrand] = useState("");
     const[message,setMessage] = useState('');
+    const[cartId,setCartId] = useState();
+    const[restaurantId,setRestaurantId] = useState();
+    const[total,setTotal] =useState();
+    const userId = localStorage.getItem('userId');
+    console.log(userId);
     
+
+    useEffect(()=>{
+
+      const fetchCart = async()=>{
+
+
+        const res =await axios.get(`http://localhost:5500/api/cart/${userId}`);
+       
+        setCartId(res.data.cart._id);
+        setRestaurantId(res.data.cart.restaurantId);
+        setTotal(res.data.cart.totalPrice);
+      }
+
+      fetchCart();
+
+    },[userId])
+
+  
+   
 
     
 
@@ -43,8 +67,8 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
 
 
 
-        totalAmount = totalAmount * 293;
-        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : 2000, currency : "USD", userId : "680dfb4f8f0f484158245a3a",cartId : "c123", restaurantId : "res123"});
+        //totalAmount = totalAmount * 293;
+        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : total , currency : "USD", userId : userId,cartId : cartId, restaurantId : restaurantId});
         
     const result = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
@@ -69,9 +93,9 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
         try {
           const statusRes = await axios.post('http://localhost:5300/api/Payment/checkPaymentStatus', {
             paymentIntentId: result.paymentIntent.id,
-            userId : "680dfb4f8f0f484158245a3a",
-            cartId : "C1234",
-            restaurantId : "res1234"
+            userId : userId,
+            cartId : cartId,
+            restaurantId : restaurantId
 
           });
       
@@ -184,7 +208,7 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
     border: 'none',
   }}
 >
-  {loading ? 'Processing...' : 'Pay 2000'}
+  {loading ? 'Processing...' : `Pay ${total}`}
 </button>
 
 
@@ -247,9 +271,9 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
   );
 };
 
-const StripePayment = ({totalAmount}) => (
+const StripePayment = () => (
     <Elements stripe={stripePromise}>
-        <CheckoutForm totalAmount={totalAmount}/>
+        <CheckoutForm/>
     </Elements>
 );
 
