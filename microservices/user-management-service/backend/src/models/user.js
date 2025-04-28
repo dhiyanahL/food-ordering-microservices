@@ -41,6 +41,13 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
+    stripCustomerId : {
+
+      type : String,
+      default : null
+
+    },
+
     favorites: [
       {
         id: {

@@ -69,7 +69,7 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
         try {
           const statusRes = await axios.post('http://localhost:5300/api/Payment/checkPaymentStatus', {
             paymentIntentId: result.paymentIntent.id,
-            userId : "L1234",
+            userId : "680dfb4f8f0f484158245a3a",
             cartId : "C1234",
             restaurantId : "res1234"
 

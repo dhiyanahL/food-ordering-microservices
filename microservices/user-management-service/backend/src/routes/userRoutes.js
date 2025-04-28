@@ -6,7 +6,8 @@ const {
   deleteUser,
   getUsers,
   addFavorite,
-  getFavorites
+  getFavorites,
+  fetchUser
 } = require("../controllers/userController");
 const {
   getLoyaltyPoints,
@@ -37,5 +38,8 @@ router.get("/favorites", authMiddleware, getFavorites);
 
 // ADMIN ROUTES
 router.get("/admin/getusers", authMiddleware, admin, getUsers);
+
+//Fetch By Payment Gateway
+router.get('/fetchUser/:id',fetchUser);
 
 module.exports = router;

@@ -14,7 +14,7 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const res = await axios.get('http://order-service/api/cart', {
+        const res = await axios.get('http://localhost:5500/api/cart/cart', {
           headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` }
         });
         setCart(res.data.cart);
@@ -32,7 +32,7 @@ const CartPage = () => {
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     try {
-      await axios.put('http://order-service/api/cart/update',
+      await axios.put('http://localhost:5500/api/cart/update',
         { itemId, quantity: newQuantity },
         { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }
       );

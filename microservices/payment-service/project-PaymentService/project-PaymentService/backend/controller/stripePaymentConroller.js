@@ -1,6 +1,7 @@
 const Stripe = require('stripe');
 const dotenv = require('dotenv');
 const Payment = require('../models/PaymentSchema');
+const axios = require('axios');
 //const sendNotification = require('../utilities/Notification');
 //const createInAppNotification = require('./notificationController');
 
@@ -16,27 +17,38 @@ exports.createPaymentIntent = async(req , res)=>{
 
         
        
-        const {amount, currency/*userId,cartId,restaurantId*/} = req.body;
-        let stripeMockCustomerId = null
+       const {amount, currency,userId,cartId,restaurantId} = req.body;
+        /*let stripeMockCustomerId = null
         if(!stripeMockCustomerId){
 
             const customer = await stripe.customers.create({
 
                 metadata : {
     
-                    email : "mockUser@example.com" 
+                    userId ,
+                    email : "slholidays2018@gmail.com" ,
+                    cartId,
+                    restaurantId
                 },
     
                 
             })
 
-            stripeMockCustomerId = customer.id;
+            stripeMockCustomerId = customer.id;*/
 
 
 
-        }
+        //}
 
-       /* const user = await User.findById(userId);
+       //Fetch user inside payment-service
+         const userResponse = await axios.get(`http://user-management-service:5000/api/user/fetchUser/${userId}`);
+         const user = userResponse.data;
+
+
+       
+           
+        
+
         let stripeCustomerId = user.stripeCustomerId;
         if(!stripeCustomerId){
 
@@ -46,7 +58,7 @@ exports.createPaymentIntent = async(req , res)=>{
     
                     userId : userId,
                     email : user.email,
-                    userName : user.userName
+                    
                 },
     
                 
@@ -54,10 +66,13 @@ exports.createPaymentIntent = async(req , res)=>{
 
 
             stripeCustomerId = customer.id;
-            user.stripeCustomerId = customer.id;
-            user.save();
+            
+            /*await user.updateOne(
+              { _id: userId },
+              { $set: { stripeCustomerId: customer.id } }
+            );*/
 
-        }*/
+       }
 
         
         
@@ -69,18 +84,18 @@ exports.createPaymentIntent = async(req , res)=>{
             automatic_payment_methods: {
               enabled: true, // 🔥 Enables Apple Pay, Google Pay, Link, and card payments automatically
             },
-            customer : /*stripeCustomerId*/stripeMockCustomerId,
+            customer :stripeCustomerId /*stripeMockCustomerId*/,
             metadata : {
 
-                cartId : 124,
-                restaurantId: 234
+                cartId,
+                restaurantId
             }
            
 
         });
 
        const reply = await stripe.paymentIntents.retrieve(paymentIntent.id)
-        console.log(reply.status);
+       //console.log(reply.status);
 
         
 
@@ -124,13 +139,28 @@ exports.createPaymentIntent = async(req , res)=>{
       paymentStatus: paymentIntent.status
     });
 
-    /*if(paymentIntent.status == "failed"){
+    if(paymentIntent.status == "failed"){
 
-      sendNotification(userEmail,`Payment Unsuccess ${paymentIntentId}`,`Your Order Details As Below ${paymentIntent.amount}`);
+      await axios.post('http://notification-service:5200/api/notification/sendNotification',{
+
+        to: userEmail,
+        subject: `Your Delivery Order ${paymentIntentId}`,
+        message: `Your Order Placmenet Unsuccess: Amount - ${paymentIntent.amount / 100} ${paymentIntent.currency.toUpperCase()}`
+      })
+
+      console.log('Notification sent to user after payment success.');
+      //sendNotification(userEmail,`Payment Unsuccess ${paymentIntentId}`,`Your Order Details As Below ${paymentIntent.amount}`);
 
     }if(paymentIntent.status == "succeeded"){
 
-      sendNotification(userEmail,`Your Delivery Order ${paymentIntentId}`,`Your Order Details As Below ${paymentIntent.amount}`);
+      await axios.post('http://notification-service:5200/api/notification/sendNotification',{
+
+        to: userEmail,
+        subject: `Your Delivery Order ${paymentIntentId}`,
+        message: `Your Order Placmenet Success: Amount - ${paymentIntent.amount / 100} ${paymentIntent.currency.toUpperCase()}`
+      })
+
+      console.log('Notification sent to user after payment success.');
       //Call the Create Order Controller method
       //Call the create Notification method for confirming the order to show in notification list in the app
       //Call the method Assigning a deliver person
@@ -141,7 +171,7 @@ exports.createPaymentIntent = async(req , res)=>{
       
 
 
-    }*/
+    }
    
 
     const saved = await payment.save();
