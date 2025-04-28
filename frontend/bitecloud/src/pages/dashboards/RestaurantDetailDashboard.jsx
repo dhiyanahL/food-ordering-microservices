@@ -233,6 +233,27 @@ export default function RestaurantDetailDashboard() {
     filterStatus === "All" ? true : order.status === filterStatus
   );
 
+  const handleStatusChange = (orderId, newStatus) => {
+    axios
+      .put(`http://localhost:5500/api/orders/${orderId}/status`, {
+        status: newStatus,
+      })
+      .then(() => {
+        alert("✅ Order status updated!");
+
+        // Update the local orders array without reloading
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+      })
+      .catch((err) => {
+        console.error("Error updating order status:", err);
+        alert("❌ Failed to update order status");
+      });
+  };
+
   if (!restaurant) return <div className="p-8">Loading...</div>;
 
   return (
@@ -630,10 +651,10 @@ export default function RestaurantDetailDashboard() {
                           }}
                         ></p>
                       )}
-                      <p>Rs. {item.price}</p>
+                      <p>$ {item.price}</p>
                       {item.originalPrice && (
                         <p className="line-through text-sm">
-                          Rs. {item.originalPrice}
+                          $ {item.originalPrice}
                         </p>
                       )}
                       <p className="text-xs text-green-600">
@@ -772,7 +793,25 @@ export default function RestaurantDetailDashboard() {
                       <td className="p-2">{order._id}</td>
                       <td className="p-2">{order.customerName}</td>
                       <td className="p-2">${order.totalPrice}</td>
-                      <td className="p-2">{order.status}</td>
+                      {/*<td className="p-2">{order.status}</td>*/}
+                      <td className="p-2">
+                        <select
+                          value={order.status}
+                          onChange={(e) =>
+                            handleStatusChange(order._id, e.target.value)
+                          }
+                          className="p-1 border rounded"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Preparing">Preparing</option>
+                          <option value="Sent to Deliver">
+                            Sent to Deliver
+                          </option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Canceled">Canceled</option>
+                        </select>
+                      </td>
+
                       <td className="p-2">{order.paymentStatus}</td>
                     </tr>
                   ))}
