@@ -117,8 +117,10 @@ exports.createPaymentIntent = async(req , res)=>{
 
   
   const { paymentIntentId, userId, cartId, restaurantId } = req.body;
+  const userResponse = await axios.get(`http://user-management-service:5000/api/user/fetchUser/${userId}`);
+  const user = userResponse.data;
   //const user = await User.findById(userId);
-  const userEmail = /*user.email*/ "slholidays2018@gmail.com";
+  const userEmail = user.email /*"slholidays2018@gmail.com"*/;
   //const restaurant = await Restaurant.findById(restaurantId);
   const restaurantEmail = /*restaurant.email*/ "restaurant@example.com" ;
 
@@ -140,39 +142,56 @@ exports.createPaymentIntent = async(req , res)=>{
       paymentStatus: paymentIntent.status
     });
 
-    if(paymentIntent.status == "failed"){
+    if (paymentIntent.status === "failed") {
 
-      await axios.post('http://notification-service:5200/api/notification/sendNotification',{
-
-        to: userEmail,
-        subject: `Your Delivery Order ${paymentIntentId}`,
-        message: `Your Order Placmenet Unsuccess: Amount - ${paymentIntent.amount / 100} ${paymentIntent.currency.toUpperCase()}`
-      })
-
-      console.log('Notification sent to user after payment success.');
-      //sendNotification(userEmail,`Payment Unsuccess ${paymentIntentId}`,`Your Order Details As Below ${paymentIntent.amount}`);
-
-    }if(paymentIntent.status == "succeeded"){
-
-      await axios.post('http://notification-service:5200/api/notification/sendNotification',{
-
-        to: userEmail,
-        subject: `Your Delivery Order ${paymentIntentId}`,
-        message: `Your Order Placmenet Success: Amount - ${paymentIntent.amount / 100} ${paymentIntent.currency.toUpperCase()}`
-      })
-
-      console.log('Notification sent to user after payment success.');
-      //Call the Create Order Controller method
-      //Call the create Notification method for confirming the order to show in notification list in the app
-      //Call the method Assigning a deliver person
-      //Call the create Notification method for informing the delivery person about the delivery and the customer in notification list in the app
-      //Call the create notification method for informing the restaurant about the order in notification list in the app
-      //send email to restaurant
-      //send email to delivery person
-      
-
-
+      const amount = (paymentIntent.amount / 100).toFixed(2); // nice format like 12.00
+      const currency = paymentIntent.currency.toUpperCase();
+      const message = `Your Order Placement Unsuccessful: Amount - ${amount} ${currency}`;
+    
+      await Promise.all([
+        axios.post('http://notification-service:5200/api/notification/sendNotification', {
+          to: userEmail,
+          subject: `Your Delivery Order ${paymentIntentId}`,
+          message: message,
+        }),
+        axios.post('http://notification-service:5200/api/notification/createNotification', {
+          userId: userId,
+          message: message,
+        })
+      ]);
+    
+      console.log('Notification sent to user after payment failure.');
     }
+    if (paymentIntent.status === "succeeded") {
+
+      const amount = (paymentIntent.amount / 100).toFixed(2);
+      const currency = paymentIntent.currency.toUpperCase();
+      const message = `Your Order Placement Successful: Amount - ${amount} ${currency}`;
+    
+      await Promise.all([
+        axios.post('http://notification-service:5200/api/notification/sendNotification', {
+          to: userEmail,
+          subject: `Your Delivery Order ${paymentIntentId}`,
+          message: message,
+        }),
+        axios.post('http://notification-service:5200/api/notification/createNotification', {
+          userId: userId,
+          message: message,
+        })
+      ]);
+    
+      console.log('Notification sent to user after payment success.');
+    
+      // Call the Create Order Controller method
+      // Call the create Notification method for confirming the order to show in notification list in the app
+      // Call the method Assigning a delivery person
+      // Call the create Notification method for informing the delivery person about the delivery and the customer in notification list in the app
+      // Call the create notification method for informing the restaurant about the order in notification list in the app
+      // send email to restaurant
+      // send email to delivery person
+    
+    }
+    
    
 
     const saved = await payment.save();

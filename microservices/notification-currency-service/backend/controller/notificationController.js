@@ -4,6 +4,7 @@ const {io} = require('../server');
 exports.createNotification = async(req,res)=>{
 
     const{userId,message} = req.body;
+    console.log(userId)
     
 
 

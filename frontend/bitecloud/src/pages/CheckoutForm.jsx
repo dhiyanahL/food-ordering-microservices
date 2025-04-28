@@ -44,7 +44,7 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
 
 
         totalAmount = totalAmount * 293;
-        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : 2000, currency : "USD", userId : "123",cartId : "c123", restaurantId : "res123"});
+        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : 2000, currency : "USD", userId : "680dfb4f8f0f484158245a3a",cartId : "c123", restaurantId : "res123"});
         
     const result = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
@@ -69,7 +69,7 @@ const CheckoutForm = ({totalAmount,userId,cartId,restaurantId})=>{
         try {
           const statusRes = await axios.post('http://localhost:5300/api/Payment/checkPaymentStatus', {
             paymentIntentId: result.paymentIntent.id,
-            userId : "L1234",
+            userId : "680dfb4f8f0f484158245a3a",
             cartId : "C1234",
             restaurantId : "res1234"
 
