@@ -651,10 +651,10 @@ export default function RestaurantDetailDashboard() {
                           }}
                         ></p>
                       )}
-                      <p>Rs. {item.price}</p>
+                      <p>$ {item.price}</p>
                       {item.originalPrice && (
                         <p className="line-through text-sm">
-                          Rs. {item.originalPrice}
+                          $ {item.originalPrice}
                         </p>
                       )}
                       <p className="text-xs text-green-600">
