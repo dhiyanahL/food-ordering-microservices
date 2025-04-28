@@ -168,7 +168,7 @@ export default function MenuPage() {
         price: item.price,
         quantity,
         restaurantId: restaurantId,
-        currencyCode: "LKR",
+        currencyCode: "USD",
       };
 
       const res = await axios.post(
