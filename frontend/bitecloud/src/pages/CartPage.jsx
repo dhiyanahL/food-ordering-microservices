@@ -10,7 +10,7 @@ const CartPage = () => {
   const [error, setError] = useState(null);
   const [updatingItems, setUpdatingItems] = useState({});
   const navigate = useNavigate();
-  const customerId = localStorage.getItem('customerId');
+  const customerId = localStorage.getItem("userId");
 
   // Helper function to calculate total
   const calculateTotal = (items) => {
