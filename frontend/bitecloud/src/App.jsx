@@ -23,6 +23,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
+import ManageRestaurants from "./pages/dashboards/SystemAdminMngRestaurants";
 
 //{/* Dashboards for each user role */}
 //<Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -61,6 +62,7 @@ function App() {
           
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/manage-restaurants" element={<ManageRestaurants/>}/>
         </Route>
         <Route path="/admin/available-offers" element={<AvailableOffers />} />
         
@@ -68,7 +70,6 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
-        <Route path="/order-history" element={<OrderHistoryPage />} />
 
         <Route path = "/payment/checkout" element = {<StripePayment/>}/>
         <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>

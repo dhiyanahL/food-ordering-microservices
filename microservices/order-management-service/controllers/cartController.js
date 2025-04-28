@@ -1,6 +1,11 @@
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 
+// Helper function to calculate total price
+const calculateTotal = (items) => {
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
 //add items to cart
 const addToCart = async (req, res) => {
     const {customerId, customerName, itemId, itemName, price, quantity, restaurantId} = req.body;
@@ -44,32 +49,38 @@ const addToCart = async (req, res) => {
 //update item quantity in cart
 const updateItemQuantity = async (req, res) => {
     const { customerId, itemId, quantity } = req.body;
-
+    
     try {
-        const cart =  await Cart.findOne({ customerId });
-
-        if(!cart) {
-            return res.status(404).json({ message: 'Cart not found' });
-        }
-
-        const item = cart.items.find(item => item.itemId === itemId);
-        if(item) {
-            item.quantity = quantity;
-
-            //calculate total
-            cart.totalPrice = cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
-            await cart.save();
-
-            res.status(200).json({ message: 'Item quantity updated successfully', cart });
-        }
-        else {
-            return res.status(404).json({ message: 'Item not found in cart' });
-        }        
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+      let cart = await Cart.findOne({ customerId });
+  
+      if (!cart) {
+        return res.status(404).json({ message: 'Cart not found' });
+      }
+  
+      // Find the item in the cart
+      const item = cart.items.find(item => item.itemId === itemId);
+      if (!item) {
+        return res.status(404).json({ message: 'Item not found in cart' });
+      }
+  
+      // Update the quantity of the item
+      item.quantity = quantity;
+  
+      // Recalculate the total price of the cart
+      cart.totalPrice = cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  
+      // Save the updated cart
+      await cart.save();
+  
+      res.status(200).json({ message: 'Item quantity updated successfully', cart });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
-};
+  };
+  
+
+  
 
 //delete item from cart
 const removeItemFromCart = async (req, res) => {
@@ -97,7 +108,7 @@ const removeItemFromCart = async (req, res) => {
 
 //view the cart
 const viewCart = async (req, res) => {
-    const {customerId} = req.body;
+    const {customerId} = req.params;
 
     try {
         const cart = await Cart.findOne({customerId});

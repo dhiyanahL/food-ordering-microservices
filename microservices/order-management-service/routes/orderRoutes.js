@@ -5,13 +5,17 @@ const {
     createOrder,
     viewOrder,
     processRefund,
-    getOrderHistory
+    getOrderHistory,
+    getAllOrders,
+    updateOrderStatus,
 } = require('../controllers/orderController');
 
 
 router.post('/create', createOrder);
 router.get('/:id', viewOrder);
 router.put('/:id/refund', processRefund);
-router.get('/history/all', getOrderHistory);
+router.get('/history/', getOrderHistory);
+router.get('/orders', getAllOrders);
+router.put('/:id/status', updateOrderStatus);
 
 module.exports = router;
