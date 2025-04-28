@@ -7,7 +7,8 @@ const {
   getUsers,
   addFavorite,
   getFavorites,
-  fetchUser
+  fetchUser,
+  getUserCountsByRole
 } = require("../controllers/userController");
 const {
   getLoyaltyPoints,
@@ -38,6 +39,7 @@ router.get("/favorites", authMiddleware, getFavorites);
 
 // ADMIN ROUTES
 router.get("/admin/getusers", authMiddleware, admin, getUsers);
+router.get("/getusercountsbyrole",authMiddleware, getUserCountsByRole);
 
 //Fetch By Payment Gateway
 router.get('/fetchUser/:id',fetchUser);

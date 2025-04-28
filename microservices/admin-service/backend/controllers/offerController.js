@@ -1,4 +1,5 @@
 const Offer = require('../models/Offer');
+const axios = require("axios");
 
 // Create offer
 const createOffer = async (req, res) => {
@@ -119,4 +120,17 @@ const getTop5OngoingOffers = async (req, res) => {
   }
 };
 
-module.exports = { createOffer, getAllOffers , editOffer, deleteOffer, getSingleOffer, getTop5OngoingOffers };
+const getUserCountsByRole = async (req, res) => {
+  try {
+    const response = await axios.get("http://user-management-service:5000/api/user/getusercountsbyrole");
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching user counts:", error);
+    res.status(500).json({ message: "Failed to fetch user counts." });
+  }
+};
+
+module.exports = { createOffer, getAllOffers , editOffer, deleteOffer, getSingleOffer, getTop5OngoingOffers, getUserCountsByRole };
+
+
+

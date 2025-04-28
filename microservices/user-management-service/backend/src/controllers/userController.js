@@ -12,6 +12,26 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+// Get user counts by role
+exports.getUserCountsByRole = async (req, res) => {
+  try {
+    const counts = await User.aggregate([
+      {
+        $group: {
+          _id: "$role",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.status(200).json(counts);
+  } catch (error) {
+    console.error("Error fetching user counts by role:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 // View profile
 exports.getProfile = async (req, res) => {
   const user = await User.findById(req.user.id).select("-password");

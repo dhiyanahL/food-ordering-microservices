@@ -63,7 +63,7 @@ export default function EditOfferForm() {
     try {
       await axios.put(`http://localhost:5100/admin/offers/${id}`, updatedOffer);
       toast.success("Offer updated successfully!");
-      navigate("/available-offers");
+      navigate("/admin/available-offers");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update offer");
     }
