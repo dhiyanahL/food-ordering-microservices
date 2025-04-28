@@ -12,23 +12,15 @@ services:
     container_name: user-management-service
     ports:
       - '5000:5000'
-<<<<<<< HEAD
-=======
-
     volumes:
-    - ./microservices/user-management-service/backend:/app
-    - /app/node_modules
->>>>>>> 78914361053cdaca554fb8f00cea6e3a2de1fdb2
+      - ./microservices/user-management-service/backend:/app
+      - /app/node_modules
     env_file:
       - ./microservices/user-management-service/backend/.env
     environment:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/users?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
-<<<<<<< HEAD
-=======
-      
     command: npm run dev  
->>>>>>> 78914361053cdaca554fb8f00cea6e3a2de1fdb2
     depends_on:
       - mongo
 
@@ -94,8 +86,6 @@ services:
     depends_on:
       - mongo
 
-<<<<<<< HEAD
-=======
   admin-service:
     build: ./microservices/admin-service/backend
     container_name: admin-service
@@ -109,8 +99,5 @@ services:
     depends_on:
       - mongo
 
->>>>>>> 78914361053cdaca554fb8f00cea6e3a2de1fdb2
 volumes:
   mongo_data:
-   
- 
