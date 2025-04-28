@@ -9,11 +9,11 @@ const {
     checkoutCart
 }  = require('../controllers/cartController');
 
-router.post('/cart/add', addToCart);
-router.put('/cart/update', updateItemQuantity);
-router.delete('/cart/remove', removeItemFromCart);
-router.get('/cart', viewCart);
-router.post('/cart/checkout', checkoutCart);
-router.delete('/cart/clear', clearCart);
+router.post('/add', addToCart);
+router.put('/update', updateItemQuantity);
+router.delete('/remove', removeItemFromCart);
+router.get('/:customerId', viewCart);
+router.post('/checkout', checkoutCart);
+router.delete('/clear', clearCart);
 
 module.exports = router;

@@ -23,6 +23,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
+import ManageRestaurants from "./pages/dashboards/SystemAdminMngRestaurants";
 
 //{/* Dashboards for each user role */}
 //<Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -58,23 +59,19 @@ function App() {
         {/* Dashboards for admin role */}
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path="/admin/add-offer" element={<AddOfferForm />} />
-          <Route path="/admin/available-offers" element={<AvailableOffers />} />
+          
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/manage-restaurants" element={<ManageRestaurants/>}/>
         </Route>
+        <Route path="/admin/available-offers" element={<AvailableOffers />} />
+        
           {/* Cart and Checkout */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
-        <Route path="/order-history" element={<OrderHistoryPage />} />
 
-
-        {/* Dashboards for restaurant admin role */}
-        <Route path="/restaurant/dashboard" element={<RestaurantAdminDashboard />} />
-        <Route path="/restaurant/dashboard/:restaurantId" element={<RestaurantDetailDashboard />} />
-
-        <Route path ="/payment/checkout" element = {<StripePayment/>}/>
-        
+        <Route path = "/payment/checkout" element = {<StripePayment/>}/>
         <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
       </Routes>
       <ToastContainer autoClose={1500} />

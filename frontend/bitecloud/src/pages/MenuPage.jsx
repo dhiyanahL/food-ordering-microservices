@@ -172,7 +172,7 @@ export default function MenuPage() {
       };
 
       const res = await axios.post(
-        "http://localhost:5500/api/cart/cart/add",
+        "http://localhost:5500/api/cart/add",
         payload,
         {
           headers: {
@@ -210,7 +210,7 @@ export default function MenuPage() {
       <div className="w-[95%] mx-auto bg-lightGreen/85 shadow-xl rounded-2xl p-8">
         {/*<div className="p-8 bg-offWhite min-h-screen font-sans">*/}
         <button
-          onClick={() => navigate("/customer/restaurants/approved")}
+          onClick={() => navigate("/customer/restaurants")}
           className="mb-6 bg-darkGreen text-white px-4 py-2 rounded hover:bg-oliveGreen"
         >
           ← Back to Restaurants

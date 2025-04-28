@@ -1,20 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Sidebar from '../components/Sidebar';
 
 const CartPage = () => {
-  const [cart, setCart] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cart, setCart] = useState({ items: [], totalPrice: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [updatingItems, setUpdatingItems] = useState({});
   const navigate = useNavigate();
-  const role = localStorage.getItem('role') || 'Customer';
+  const customerId = localStorage.getItem("userId");
+
+  // Helper function to calculate total
+  const calculateTotal = (items) => {
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  // Fetch cart data
+  const fetchCartData = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:5500/api/cart/${customerId}`);
+      setCart(res.data.cart || { items: [], totalPrice: 0 });
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch cart data');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const res = await axios.get('http://localhost:5500/api/cart/cart', {
+        const res = await axios.get('http://order-service/api/cart', {
           headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` }
         });
         setCart(res.data.cart);
@@ -32,7 +53,7 @@ const CartPage = () => {
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     try {
-      await axios.put('http://localhost:5500/api/cart/update',
+      await axios.put('http://order-service/api/cart/update',
         { itemId, quantity: newQuantity },
         { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }
       );
@@ -45,41 +66,75 @@ const CartPage = () => {
           total + (item.price * (item.itemId === itemId ? newQuantity : item.quantity)), 0)
       });
     } catch (err) {
-      console.error(err);
+      console.error('Failed to update quantity:', err);
+      // Revert the optimistic UI update if the API call fails.
+      fetchCartData();
+    } finally {
+      setUpdatingItems(prev => ({ ...prev, [itemId]: false }));
     }
   };
+  
 
+  // Remove item with optimistic UI
   const removeItem = async (itemId) => {
     try {
-      await axios.delete('http://order-service/api/cart/remove', {
-        data: { itemId },
-        headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` }
+      setUpdatingItems(prev => ({ ...prev, [itemId]: true }));
+
+      // Optimistic UI update
+      setCart(prevCart => {
+        const updatedItems = prevCart.items.filter(item => item.itemId !== itemId);
+        return {
+          ...prevCart,
+          items: updatedItems,
+          totalPrice: calculateTotal(updatedItems)
+        };
       });
-      setCart({
-        ...cart,
-        items: cart.items.filter(item => item.itemId !== itemId),
-        totalPrice: cart.items.reduce((total, item) =>
-          item.itemId === itemId ? total : total + (item.price * item.quantity), 0)
+
+      // Sync with backend
+      await axios.delete('http://localhost:5500/api/cart/remove', {
+        data: { customerId, itemId }
       });
+
     } catch (err) {
-      console.error(err);
+      console.error('Failed to remove item:', err);
+      fetchCartData(); // Revert on error
+    } finally {
+      setUpdatingItems(prev => ({ ...prev, [itemId]: false }));
     }
   };
 
+  // Handle checkout
   const handleCheckout = () => {
-    navigate('/checkout');
+    navigate('/checkout', { state: { cart } });
   };
 
-  if (!cart) {
+  if (error) {
     return (
       <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
-        <Header toggleSidebar={toggleSidebar} />
-        <div className="flex flex-1">
-          <Sidebar role={role} isOpen={sidebarOpen} />
-          <div className="flex-grow flex items-center justify-center">
-            <div className="bg-white rounded-xl p-8 shadow-lg max-w-md w-full text-center">
-              <p className="text-gray-600">Loading your cart...</p>
-            </div>
+        <Header />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+            <p className="text-red-500">{error}</p>
+            <button 
+              onClick={fetchCartData}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (loading && cart.items.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
+        <Header />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="bg-white rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+            <p className="text-gray-600">Loading your cart...</p>
           </div>
         </div>
         <Footer />
@@ -88,106 +143,113 @@ const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed"
-         style={{ backgroundImage: 'url(/images/bg.png)' }}>
-      <Header toggleSidebar={toggleSidebar} />
+    <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/images/bg.png)' }}>
+      <Header />
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-8">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-[#103713] mb-6">Your Cart</h2>
 
-      <div className="flex flex-1">
-        <Sidebar role={role} isOpen={sidebarOpen} />
+            {cart.items.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="inline-block bg-white border border-[#E2DBD0] rounded-xl p-8 max-w-md">
+                  <div className="text-5xl mb-4">🛒</div>
+                  <h3 className="text-xl font-semibold text-[#103713] mb-2">Your cart is empty</h3>
+                  <p className="text-gray-600 mb-6">Looks like you haven't added any items yet</p>
+                  <button
+                    onClick={() => navigate('/customer/restaurants/approved')}
+                    className="px-6 py-2 bg-[#628b35] text-white rounded-lg hover:bg-[#4a6b2a] transition-colors"
+                  >
+                    Browse Restaurants
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="divide-y divide-[#E2DBD0]">
+                  {cart.items.map(item => (
+                    <div key={item.itemId} className="py-4 flex justify-between items-center">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-[#628b35]">{item.itemName}</h3>
+                        <p className="text-gray-600">${item.price.toFixed(2)} each</p>
+                      </div>
 
-        {/* Main content area with white container */}
-        <main className={`flex-grow transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-56' : 'ml-0'}`}>
-          <div className="container mx-auto px-4 py-8">
-            {/* White container that sits on top of the background */}
-            <div className="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold text-[#103713] mb-6">Your Cart</h2>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center border border-[#E2DBD0] rounded-lg">
+                          <button
+                            onClick={() => updateQuantity(item.itemId, -1)}
+                            className="px-3 py-1 text-[#103713] hover:bg-gray-100 disabled:opacity-50"
+                            disabled={item.quantity <= 1 || updatingItems[item.itemId]}
+                          >
+                            -
+                          </button>
+                          <span className="px-3">
+                            {updatingItems[item.itemId] ? (
+                              <span className="inline-block h-4 w-4 border-2 border-blue-500 rounded-full border-t-transparent animate-spin"></span>
+                            ) : (
+                              item.quantity
+                            )}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.itemId, 1)}
+                            className="px-3 py-1 text-[#103713] hover:bg-gray-100 disabled:opacity-50"
+                            disabled={updatingItems[item.itemId]}
+                          >
+                            +
+                          </button>
+                        </div>
 
-              {cart.items.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="inline-block bg-white border border-[#E2DBD0] rounded-xl p-8 max-w-md">
-                    <div className="text-5xl mb-4">🛒</div>
-                    <h3 className="text-xl font-semibold text-[#103713] mb-2">Your cart is empty</h3>
-                    <p className="text-gray-600 mb-6">Looks like you haven't added any items yet</p>
+                        <p className="w-20 text-right font-medium">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </p>
+
+                        <button
+                          onClick={() => removeItem(item.itemId)}
+                          className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                          disabled={updatingItems[item.itemId]}
+                        >
+                          {updatingItems[item.itemId] ? 'Removing...' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 border-t border-[#E2DBD0] pt-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold text-[#103713]">Total</h3>
+                    <p className="text-xl font-bold">${cart.totalPrice.toFixed(2)}</p>
+                  </div>
+
+                  <div className="mt-6 flex justify-between space-x-4">
                     <button
-                      onClick={() => navigate('/restaurants')}
-                      className="px-6 py-2 bg-[#628b35] text-white rounded-lg hover:bg-[#4a6b2a] transition-colors"
+                      onClick={() => navigate('/customer/restaurants/approved')}
+                      className="flex-1 py-2 border border-[#103713] text-[#103713] rounded-lg hover:bg-gray-100 transition-colors"
+                      disabled={loading}
                     >
-                      Browse Restaurants
+                      Continue Shopping
+                    </button>
+                    <button
+                      onClick={handleCheckout}
+                      className="flex-1 py-2 bg-[#628b35] text-white rounded-lg hover:bg-[#4a6b2a] transition-colors"
+                      disabled={loading || cart.items.length === 0}
+                    >
+                      {loading ? 'Processing...' : 'Proceed to Checkout'}
+                    </button>
+                    <button
+                      onClick={() => clearCart()}
+                      className="flex-1 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-gray-100 transition-colors"
+                      disabled={loading || cart.items.length === 0}
+                    >
+                      {loading ? 'Clearing...' : 'Clear Cart'}
                     </button>
                   </div>
                 </div>
-              ) : (
-                <>
-                  {/* Cart items list */}
-                  <div className="divide-y divide-[#E2DBD0]">
-                    {cart.items.map(item => (
-                      <div key={item.itemId} className="py-4 flex justify-between items-center">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-[#628b35]">{item.itemName}</h3>
-                          <p className="text-gray-600">${item.price.toFixed(2)} each</p>
-                        </div>
-
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center border border-[#E2DBD0] rounded-lg">
-                            <button 
-                              onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
-                              className="px-3 py-1 text-[#103713] hover:bg-gray-100"
-                            >
-                              -
-                            </button>
-                            <span className="px-3">{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
-                              className="px-3 py-1 text-[#103713] hover:bg-gray-100"
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          <p className="w-20 text-right font-medium">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-
-                          <button 
-                            onClick={() => removeItem(item.itemId)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Cart total and actions */}
-                  <div className="mt-8 border-t border-[#E2DBD0] pt-6">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-bold text-[#103713]">Total</h3>
-                      <p className="text-xl font-bold">${cart.totalPrice.toFixed(2)}</p>
-                    </div>
-
-                    <div className="mt-6 flex justify-between space-x-4">
-                      <button
-                        onClick={() => navigate('/restaurants')}
-                        className="flex-1 py-2 border border-[#103713] text-[#103713] rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        Continue Shopping
-                      </button>
-                      <button
-                        onClick={handleCheckout}
-                        className="flex-1 py-2 bg-[#628b35] text-white rounded-lg hover:bg-[#4a6b2a] transition-colors"
-                      >
-                        Proceed to Checkout
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+              </>
+            )}
           </div>
-        </main>
-      </div>
-
+        </div>
+      </main>
       <Footer />
     </div>
   );

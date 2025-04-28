@@ -8,8 +8,15 @@ const orderRoutes = require('./routes/orderRoutes');
 dotenv.config();
 const app = express();
 
+// Allow CORS for frontend running on port 5173
+const corsOptions = {
+  origin: 'http://localhost:5173', // Specify the frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+  credentials: true, // Allow cookies if needed
+};
+
 //middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 //connect to mongodb
