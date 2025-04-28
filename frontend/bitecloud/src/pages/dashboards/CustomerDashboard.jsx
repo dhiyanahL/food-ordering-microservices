@@ -4,6 +4,7 @@ import axios from "axios";
 import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar";
 import Footer from "../../components/Footer";
+import { Link } from 'react-router-dom';
 
 const CustomerDashboard = () => {
   const [user, setUser] = useState({
@@ -36,6 +37,7 @@ const CustomerDashboard = () => {
   };
 
   useEffect(() => {
+    console.log("Fetching dashboard data...");
     const fetchData = async () => {
       try {
         const userRes = await axios.get(
@@ -49,23 +51,28 @@ const CustomerDashboard = () => {
           averageRating: userRes.data.averageRatingGiven,
         });
 
+        console.log("Fetching offers...");
+        const offersRes = await axios.get(
+          "http://localhost:5000/api/user/offers/top-5",
+          config
+        );
+        console.log("Offers data:", offersRes.data);
+        setOffers(offersRes.data.offers);
+
+        console.log("Fetching favorites...");
         const favRes = await axios.get(
           "http://localhost:5000/api/user/favorites",
           config
         );
         setFavorites(favRes.data);
+        console.log("Favorites data:", favRes.data);
+
 
         const orderRes = await axios.get(
           "http://localhost:5500/api/order/history?limit=3",
           config
         );
         setRecentOrders(orderRes.data);
-
-        const offersRes = await axios.get(
-          "http://localhost:5000/api/user/offers/top-5",
-          config
-        );
-        setOffers(offersRes.data.offers || offersRes.data);
 
         const recRes = await axios.get(
           "http://localhost:5500/api/orders/recommendations",
@@ -199,19 +206,24 @@ const CustomerDashboard = () => {
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
                   🎁 Ongoing Offers
                 </h2>
-                {offers.length > 0 ? (
-                  offers.map((offer) => (
-                    <div key={offer._id} className="mb-2">
-                      <h3 className="font-semibold text-[#628B35]">
-                        {offer.title}
-                      </h3>
-                      <p className="text-sm text-[#6F4D38]">
-                        {offer.description}
-                      </p>
-                    </div>
-                  ))
+                {Array.isArray(offers) && offers.length > 0 ? (
+                  <ul className="space-y-2">
+                    {offers.map((offer) => (
+                      <li
+                        key={offer._id}
+                        className="p-2 bg-white rounded-lg shadow-sm"
+                      >
+                        <h3 className="font-bold text-[#628B35]">
+                          {offer.title}
+                        </h3>
+                        <p className="text-[#6F4D38]">{offer.description}</p>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
-                  <p>No active offers.</p>
+                  <p className="text-gray-600">
+                    No ongoing offers at the moment.
+                  </p>
                 )}
               </div>
 
@@ -219,11 +231,13 @@ const CustomerDashboard = () => {
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
                   ❤️ Your Favourites
                 </h2>
+                {console.log("Rendering favorites:", favorites)} {/* Debug line */}
+
                 {favorites.length > 0 ? (
                   favorites.map((fav) => (
                     <a
                       key={fav._id}
-                      href={`/restaurant/${fav._id}`}
+                      href={`/customer/restaurants/${fav._id}/menu`}
                       className="block text-blue-600 hover:underline mb-1"
                     >
                       🍽️ {fav.name}

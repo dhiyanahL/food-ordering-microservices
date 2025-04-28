@@ -22,7 +22,15 @@ exports.editProfile = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  const { name, email, oldPassword, newPassword, phoneNumber, address,averageRatingGiven } = req.body;
+  const {
+    name,
+    email,
+    oldPassword,
+    newPassword,
+    phoneNumber,
+    address,
+    averageRatingGiven,
+  } = req.body;
 
   user.name = name || user.name;
   user.email = email || user.email;
@@ -37,7 +45,9 @@ exports.editProfile = async (req, res) => {
     }
 
     if (newPassword.length < 8) {
-      return res.status(400).json({ message: "New password must be at least 8 characters long" });
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 8 characters long" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -56,11 +66,11 @@ exports.editProfile = async (req, res) => {
         address: user.address,
         membershipTier: user.membershipTier,
         loyaltyPoints: user.loyaltyPoints,
-        averageRatingGiven: user.averageRatingGiven
+        averageRatingGiven: user.averageRatingGiven,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating profile' });
+    res.status(500).json({ message: "Error updating profile" });
   }
 };
 
@@ -69,6 +79,7 @@ exports.deleteUser = async (req, res) => {
   await User.findByIdAndDelete(req.user.id);
   res.json({ message: "User deleted" });
 };
+
 
 exports.addFavorite = async (req, res) => {
   const { restaurantId } = req.body;
@@ -93,7 +104,8 @@ exports.addFavorite = async (req, res) => {
 };
 
 
-// Get Favorites
+
+// Get Favorites// Get Favorites
 exports.getFavorites = async (req, res) => {
   const userId = req.user.id;
 
