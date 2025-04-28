@@ -18,7 +18,7 @@ exports.createPaymentIntent = async(req , res)=>{
         
        
        const {amount, currency,userId,cartId,restaurantId} = req.body;
-        let stripeMockCustomerId = null
+        /*let stripeMockCustomerId = null
         if(!stripeMockCustomerId){
 
             const customer = await stripe.customers.create({
@@ -39,41 +39,41 @@ exports.createPaymentIntent = async(req , res)=>{
 
 
 
-        }
+        }*/
 
        //Fetch user inside payment-service
-         //const userResponse = await axios.get(`http://user-management-service:5000/api/user/fetchUser/${userId}`);
-         //const user = userResponse.data;
+         const userResponse = await axios.get(`http://user-management-service:5000/api/user/fetchUser/${userId}`);
+         const user = userResponse.data;
 
 
        
            
         
 
-       // let stripeCustomerId = user.stripeCustomerId;
-        //if(!stripeCustomerId){
+        let stripeCustomerId = user.stripeCustomerId;
+        if(!stripeCustomerId){
 
-           // const customer = await stripe.customers.create({
+           const customer = await stripe.customers.create({
 
-               /// metadata : {
+                metadata : {
     
-                    //userId : userId,
-                   // email : user.email,
+                    userId : userId,
+                   email : user.email,
                     
-                //},
+                },
     
                 
-          //  })
+            })
 
 
-            //stripeCustomerId = customer.id;
+            stripeCustomerId = customer.id;
             
             /*await user.updateOne(
               { _id: userId },
               { $set: { stripeCustomerId: customer.id } }
             );*/
 
-     //  }
+      }
 
         
         
@@ -85,7 +85,7 @@ exports.createPaymentIntent = async(req , res)=>{
             automatic_payment_methods: {
               enabled: true, // 🔥 Enables Apple Pay, Google Pay, Link, and card payments automatically
             },
-            customer :/*stripeCustomerId*/ stripeMockCustomerId,
+            customer :stripeCustomerId /*stripeMockCustomerId*/,
             metadata : {
 
                 cartId,
