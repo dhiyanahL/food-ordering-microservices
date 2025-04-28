@@ -10,7 +10,7 @@ const CartPage = () => {
   const [error, setError] = useState(null);
   const [updatingItems, setUpdatingItems] = useState({});
   const navigate = useNavigate();
-  const customerId = localStorage.getItem('customerId') || '67ffca8ee33001dd7dc5eb4c';
+  const customerId = localStorage.getItem("userId");
 
   // Helper function to calculate total
   const calculateTotal = (items) => {
@@ -33,38 +33,38 @@ const CartPage = () => {
   };
 
   useEffect(() => {
-    fetchCartData();
-  }, [customerId]);
-
-  // Update item quantity with optimistic UI
-  const updateQuantity = async (itemId, delta) => {
-    try {
-      // Optimistic UI update: Update the quantity in the UI first.
-      setUpdatingItems(prev => ({ ...prev, [itemId]: true }));
-      
-      // Find the item and update the quantity optimistically in the cart.
-      setCart(prevCart => {
-        const updatedItems = prevCart.items.map(item => {
-          if (item.itemId === itemId) {
-            return { ...item, quantity: Math.max(1, item.quantity + delta) };
-          }
-          return item;
+    const fetchCart = async () => {
+      try {
+        const res = await axios.get('http://order-service/api/cart', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` }
         });
-        return {
-          ...prevCart,
-          items: updatedItems,
-          totalPrice: calculateTotal(updatedItems),
-        };
+        setCart(res.data.cart);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCart();
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const updateQuantity = async (itemId, newQuantity) => {
+    if (newQuantity < 1) return;
+    try {
+      await axios.put('http://order-service/api/cart/update',
+        { itemId, quantity: newQuantity },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }
+      );
+      setCart({
+        ...cart,
+        items: cart.items.map(item =>
+          item.itemId === itemId ? { ...item, quantity: newQuantity } : item
+        ),
+        totalPrice: cart.items.reduce((total, item) =>
+          total + (item.price * (item.itemId === itemId ? newQuantity : item.quantity)), 0)
       });
-  
-      // Sync with backend immediately
-      const updatedItem = cart.items.find(i => i.itemId === itemId);
-      await axios.put('http://localhost:5500/api/cart/update', {
-        customerId,
-        itemId,
-        quantity: updatedItem.quantity + delta,
-      });
-  
     } catch (err) {
       console.error('Failed to update quantity:', err);
       // Revert the optimistic UI update if the API call fails.

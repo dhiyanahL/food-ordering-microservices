@@ -3,23 +3,26 @@ const {io} = require('../server');
 
 exports.createNotification = async(req,res)=>{
 
-    //const{userId,message} = req.body;
+    const{userId,message} = req.body;
+    console.log(userId)
     
 
 
     const notification = new Notification({
 
-        userId : "0G1MEwKQDTpN4HONAAAL" /*userId*/ ,
-        message : "User 123 you have cancelled the order 124" /*message*/,
+       userId ,
+       message
        
 
 
     })
 
     const reply = await notification.save();
+    console.log(reply.message);
+  
     if(!reply) return res.status(400).json({message : "error occurred in creating the notification"});
     res.status(202).json({message : "notification created successfully"});
-    io.to(123).emit('notification', reply);
+    io.to(userId).emit('notification', reply);
    
 }
 

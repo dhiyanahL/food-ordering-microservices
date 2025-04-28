@@ -172,7 +172,7 @@ export default function MenuPage() {
       };
 
       const res = await axios.post(
-        "http://localhost:5500/api/cart/cart/add",
+        "http://localhost:5500/api/cart/add",
         payload,
         {
           headers: {

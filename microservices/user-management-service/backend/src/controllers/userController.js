@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 // Get all users
 exports.getUsers = async (req, res) => {
@@ -117,5 +118,24 @@ exports.getFavorites = async (req, res) => {
   } catch (error) {
     console.error('Error fetching favorites:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+exports.fetchUser = async (req, res) => {
+  const userId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ err: "Invalid user ID" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ err: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ err: "Server Error Occurred" });
   }
 };
