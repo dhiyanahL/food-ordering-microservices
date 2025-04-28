@@ -58,10 +58,11 @@ function App() {
         {/* Dashboards for admin role */}
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path="/admin/add-offer" element={<AddOfferForm />} />
-          <Route path="/admin/available-offers" element={<AvailableOffers />} />
+          
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
+        <Route path="/admin/available-offers" element={<AvailableOffers />} />
         
           {/* Cart and Checkout */}
         <Route path="/cart" element={<CartPage />} />
