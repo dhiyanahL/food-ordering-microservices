@@ -17,7 +17,7 @@ exports.createPaymentIntent = async(req , res)=>{
 
         
        
-       const {amount, currency/*,userId,cartId,restaurantId*/} = req.body;
+       const {amount, currency,userId,cartId,restaurantId} = req.body;
         let stripeMockCustomerId = null
         if(!stripeMockCustomerId){
 
@@ -25,10 +25,11 @@ exports.createPaymentIntent = async(req , res)=>{
 
                 metadata : {
     
-                    userId ,
-                    email : "slholidays2018@gmail.com" ,
+                    userId,
                     cartId,
+                    email : "slholidays2018@gmail.com" ,
                     restaurantId
+               
                 },
     
                 
@@ -84,7 +85,7 @@ exports.createPaymentIntent = async(req , res)=>{
             automatic_payment_methods: {
               enabled: true, // 🔥 Enables Apple Pay, Google Pay, Link, and card payments automatically
             },
-            customer :stripeCustomerId /*stripeMockCustomerId*/,
+            customer :/*stripeCustomerId*/ stripeMockCustomerId,
             metadata : {
 
                 cartId,
