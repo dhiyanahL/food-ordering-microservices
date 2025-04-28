@@ -177,6 +177,17 @@ exports.createPaymentIntent = async(req , res)=>{
         axios.post('http://notification-service:5200/api/notification/createNotification', {
           userId: userId,
           message: message,
+        }),
+
+        axios.post('http://order-service:5500/api/cart/checkout',{
+
+          customerId : userId
+        }),
+
+        axios.delete('http://order-service:5500/api/cart/clear',{
+
+          customerId : userId
+
         })
       ]);
     
