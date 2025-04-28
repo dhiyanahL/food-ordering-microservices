@@ -30,16 +30,20 @@ export default function RestaurantDetailDashboard() {
   const [showMenuItems, setShowMenuItems] = useState(true);
   const [uploading, setUploading] = useState(false);
   //const [notifications, setNotifications] = useState([]);
- //const [showNotifications, setShowNotifications] = useState(false);
+  //const [showNotifications, setShowNotifications] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [filterStatus, setFilterStatus] = useState("All");
 
   useEffect(() => {
-    {/*axios
+    {
+      /*axios
       .get(`http://localhost:5400/restaurant-notifications/${restaurantId}`)
       .then((res) => setNotifications(res.data))
-      .catch((err) => console.error("Failed to load notifications", err)); */}
+      .catch((err) => console.error("Failed to load notifications", err)); */
+    }
 
     axios
       .get(`http://localhost:5400/restaurants/${restaurantId}`)
@@ -52,6 +56,19 @@ export default function RestaurantDetailDashboard() {
       .get(`http://localhost:5400/restaurants/${restaurantId}/menu`)
       .then((res) => {
         setMenuItems(res.data);
+      });
+
+    axios
+      .get("http://localhost:5500/api/orders/orders")
+      .then((res) => {
+        const allOrders = res.data.orders || [];
+        const restaurantOrders = allOrders.filter(
+          (order) => order.restaurantId === restaurantId
+        );
+        setOrders(restaurantOrders);
+      })
+      .catch((err) => {
+        console.error("Error fetching orders:", err);
       });
   }, [restaurantId]);
 
@@ -183,7 +200,8 @@ export default function RestaurantDetailDashboard() {
       .catch(() => alert("❌ Failed to delete restaurant"));
   };
 
-  {/*const deleteNotification = async (id) => {
+  {
+    /*const deleteNotification = async (id) => {
     try {
       await axios.delete(
         `http://localhost:5400/restaurant-notifications/${id}`
@@ -192,7 +210,8 @@ export default function RestaurantDetailDashboard() {
     } catch (error) {
       console.error("Error deleting notification", error);
     }
-  };*/}
+  };*/
+  }
 
   const filteredMenuItems = menuItems.filter(
     (item) =>
@@ -209,6 +228,10 @@ export default function RestaurantDetailDashboard() {
       '<mark class="bg-transparent font-bold text-darkGreen">$1</mark>'
     );
   };
+
+  const filteredOrders = orders.filter((order) =>
+    filterStatus === "All" ? true : order.status === filterStatus
+  );
 
   if (!restaurant) return <div className="p-8">Loading...</div>;
 
@@ -711,15 +734,51 @@ export default function RestaurantDetailDashboard() {
           </div>
           {/* Orders Placeholder */}
           <div className="bg-softBeige border-4 border-oliveGreen p-6 rounded-xl shadow mb-8">
-            <h2 className="text-xl font-semibold text-darkGreen font-kalnia mb-2">
-              📦 Orders
+            <h2 className="text-2xl font-semibold text-darkGreen font-kalnia">
+              Orders
             </h2>
-            <p className="text-gray-600">
-              This section will display all orders related to this restaurant.
-            </p>
-            <p className="text-sm text-gray-500">
-              We'll implement this after integrating with the Order Service.
-            </p>
+
+            <div className="mb-4">
+              <label className="text-darkGreen font-semibold mr-2">
+                Filter by Status:
+              </label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="p-2 rounded border border-oliveGreen"
+              >
+                <option value="All">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Preparing">Preparing</option>
+                <option value="Sent to Deliver">Sent to Deliver</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Canceled">Canceled</option>
+              </select>
+            </div>
+            <div className="overflow-x-auto mt-6">
+              <table className="w-full text-left mt-4">
+                <thead>
+                  <tr className="bg-oliveGreen text-white">
+                    <th className="p-3">Order ID</th>
+                    <th className="p-3">Customer Name</th>
+                    <th className="p-3">Total Price</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Payment Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((order) => (
+                    <tr key={order._id} className="border-t hover:bg-softBeige">
+                      <td className="p-2">{order._id}</td>
+                      <td className="p-2">{order.customerName}</td>
+                      <td className="p-2">${order.totalPrice}</td>
+                      <td className="p-2">{order.status}</td>
+                      <td className="p-2">{order.paymentStatus}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Delete Restaurant */}
