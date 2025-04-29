@@ -37,8 +37,18 @@ const DashboardHeader = ({ toggleSidebar }) => {
           setNotifications(allNotifications);
           return;
         } else if (location.pathname.startsWith("/admin")) {
-          // Admin Dashboard: FETCH ADMIN NOTIFICATIONS
           res = await axios.get("http://localhost:5100/admin/notifications");
+        
+          // Mark admin notifications
+          const adminNotifications = res.data.map((n) => ({ ...n, source: "admin" }));
+        
+          // Set notifications
+          setNotifications(adminNotifications);
+        
+          // 🚨 STOP further execution
+          return;
+        
+        
         } else {
           // Not on dashboard pages
           setNotifications([]);
@@ -54,17 +64,26 @@ const DashboardHeader = ({ toggleSidebar }) => {
     };
   
     fetchNotifications();
-  }, [location.pathname]);
+  }, [location.pathname, token]);
   
 
-  const deleteNotification = async (id) => {
-    try {
+//Deletes notification based on its source (admin or restaurant)
+const deleteNotification = async (id, source) => {
+  try {
+    if (source === "admin") {
+      // Delete from Admin Service
+      await axios.delete(`http://localhost:5100/admin/notifications/${id}`);
+    } else {
+      // Delete from Restaurant Service
       await axios.delete(`http://localhost:5400/restaurant-notifications/${id}`);
-      setNotifications((prev) => prev.filter((n) => n._id !== id));
-    } catch (error) {
-      console.error("Error deleting notification", error);
     }
-  };
+    //Update the local state after deletion
+    setNotifications((prev) => prev.filter((n) => n._id !== id));
+  } catch (error) {
+    console.error("❌ Error deleting notification:", error.response?.data || error.message);
+  }
+};
+
 
   return (
     <header className="bg-darkGreen text-[#FFFDF5] flex items-center justify-between p-4 shadow-lg relative">
@@ -130,7 +149,7 @@ const DashboardHeader = ({ toggleSidebar }) => {
                       }`}
                     >
                       <span>{note.message}</span>
-                      <button onClick={() => deleteNotification(note._id)} className="ml-2 text-darkGreen hover:text-black">
+                      <button onClick={() => deleteNotification(note._id, note.source)} className="ml-2 text-darkGreen hover:text-black">
                         ❌
                       </button>
                     </div>

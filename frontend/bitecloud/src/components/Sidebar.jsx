@@ -31,7 +31,7 @@ const Sidebar = ({ role, isOpen }) => {
       { name: 'Dashboard', icon: FaHome, path: '/customer/dashboard' },
       { name: 'Restaurants', icon: FaUtensils, path: '/customer/restaurants' },
       { name: 'Orders', icon: FaListAlt, path: '/customer/orders' },
-      { name: 'Offers', icon: FaTags, path: '/customer/offers' },
+      //{ name: 'Offers', icon: FaTags, path: '/customer/offers' },
       { name: 'Profile', icon: FaUserAlt, path: '/profile' },
       { name: 'Logout', icon: FaSignOutAlt, path: null, onClick: handleLogout },
     ],

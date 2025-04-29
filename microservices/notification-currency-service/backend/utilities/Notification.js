@@ -10,8 +10,10 @@ const transporter = nodemailer.createTransport({
   });
 
   // Function to send email
-const sendNotification = async (to, subject, message) => {
+const sendNotification = async (req,res) => {
     try {
+
+      const{to,subject,message} = req.body;
       await transporter.sendMail({
         from: `"Go Bites" <${process.env.EMAIL_USER}>`,
         to,

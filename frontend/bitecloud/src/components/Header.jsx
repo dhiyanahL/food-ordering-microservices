@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsPersonCircle } from "react-icons/bs";
 import { FaShoppingCart, FaBell, FaBars, FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import NotificationComponent from "../pages/NotificationComponent";
 
 const Header = ({ toggleSidebar }) => {
-  const navigate = useNavigate(); 
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unseenCount, setUnseenCount] = useState(0);
+  const navigate = useNavigate();
+
+  const handleNotificationClick = () => {
+    setShowNotifications((prev) => !prev);
+  };
+
   return (
     <header className="bg-darkGreen text-[#FFFDF5] flex items-center justify-between p-3 shadow-lg font-[Kalnia]">
-      {/* Left side: Sidebar toggle + logo */}
       <div className="flex items-center gap-4">
         <button
           onClick={toggleSidebar}
@@ -25,30 +32,36 @@ const Header = ({ toggleSidebar }) => {
         </div>
       </div>
 
-      {/* Right side: Icons */}
-      <div className="flex items-center gap-6 text-2xl">
-      <FaHome
+      <div className="flex items-center gap-6 text-2xl relative">
+        <FaHome
           className="cursor-pointer hover:text-[#FFD700]"
-          onClick={() => navigate("/customer/dashboard")} //Change according to role
+          onClick={() => navigate("/customer/dashboard")}
         />
 
-        {/* Notifications icon with redirect to notifications page */}
-        <FaBell
+        <div className="relative cursor-pointer" onClick={handleNotificationClick}>
+          <FaBell className="hover:text-[#FFD700]" />
+          {unseenCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {unseenCount}
+            </span>
+          )}
+        </div>
+
+        <FaShoppingCart
           className="cursor-pointer hover:text-[#FFD700]"
-          onClick={() => navigate("/notification/viewNotification")}
+          onClick={() => navigate("/cart")}
         />
-
-        {/* Cart icon */}
-        <FaShoppingCart className="cursor-pointer hover:text-[#FFD700]"
-        onClick={() => navigate("/cart")}
-         />
-
-        {/* Profile icon with redirect to view profile page */}
         <BsPersonCircle
           className="cursor-pointer hover:text-[#FFD700]"
           onClick={() => navigate("/profile")}
         />
       </div>
+
+      {showNotifications && (
+        <div className="absolute top-16 right-4 z-20">
+          <NotificationComponent onUnseenCountChange={setUnseenCount} />
+        </div>
+      )}
     </header>
   );
 };

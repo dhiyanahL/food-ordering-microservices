@@ -41,16 +41,10 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
-    favorites: [
-      {
-        id: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Restaurant',
-          
-        },
-        
-      }
-    ]
+    favorites: [{
+      id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
+      name: { type: String } 
+    }]
   },
   { timestamps: true }
 );

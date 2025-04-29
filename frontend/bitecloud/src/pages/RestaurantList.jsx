@@ -105,14 +105,16 @@ export default function RestaurantList  () {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/user/add-favorite",
-        { restaurantId },
+        "http://localhost:5000/api/user/favorites",
+        { restaurantId},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
+        
       );
+      
       alert("✅ Added to favorites!");
     } catch (error) {
       console.error("❌ Error adding to favorites:", error);
