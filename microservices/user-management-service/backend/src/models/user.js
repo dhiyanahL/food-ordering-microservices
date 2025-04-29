@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
+    stripeCustomerId:{
+      type: String,
+      default : null
+    },
+
     /*favorites: [{
       id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
       name: { type: String } 

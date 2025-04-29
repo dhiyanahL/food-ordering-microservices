@@ -112,6 +112,7 @@ const viewCart = async (req, res) => {
 
     try {
         const cart = await Cart.findOne({customerId});
+        console.log(cart.totalPrice);
 
         if(!cart) {
             return res.status(404).json({ message: 'Cart not found' });
@@ -126,49 +127,34 @@ const viewCart = async (req, res) => {
 
 //checkout
 const checkoutCart = async (req, res) => {
-    const { customerId } = req.body;
+    const {customerId} = req.body;
 
     try {
-        const cart = await Cart.findOne({ customerId });
+        const cart = await Cart.findOne({customerId});
 
-        if (!cart) {
+        if(!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
 
-        // Prepare data for payment service
-        const paymentRequest = {
-            amount: Math.round(cart.totalPrice * 100), // Convert to cents
-            currency: 'USD',
-            metadata: {
-                userId: customerId,
-                cartId: cart._id.toString(),
-                restaurantId: cart.restaurantId
-            }
-        };
-
-        // Call payment service
-        const paymentResponse = await axios.post(
-            'http://localhost:5300/api/Payment/createPaymentIntent', 
-            paymentRequest
-        );
-
-        // Return all necessary data
-        res.status(200).json({
-            clientSecret: paymentResponse.data.clientSecret,
-            paymentIntentId: paymentResponse.data.paymentIntentId,
-            amount: cart.totalPrice,
+            const newOrder = new Order({
             customerId,
-            cartId: cart._id.toString(),
+            customerName: cart.customerName,
             restaurantId: cart.restaurantId,
-            cartItems: cart.items // Include if needed by payment page
+            items: cart.items,
+            totalPrice: cart.totalPrice,
+            status: 'Pending',
+            paymentStatus: 'Paid',
         });
 
-    } catch (err) {
-        console.error('Checkout error:', err);
-        res.status(500).json({ 
-            message: "Checkout failed",
-            error: err.message 
+        await newOrder.save();
+       
+
+        res.status(200).json({
+            message: 'Order placed successfully'
         });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({message: "An error occured"});
     }
 };
 

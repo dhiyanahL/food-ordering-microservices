@@ -1,5 +1,6 @@
 
 import React, {useState, useEffect} from 'react';
+import { useLocation } from 'react-router-dom';
 import {loadStripe} from '@stripe/stripe-js';
 import {Elements,CardElement,useStripe,useElements,  CardNumberElement,
   CardExpiryElement,
@@ -25,18 +26,25 @@ const CARD_OPTIONS = {
   },
 };
 
-const CheckoutForm = ()=>{
+const CheckoutForm = ({userId,cartId,restaurantId})=>{
 
     const stripe = useStripe();
     const elements = useElements();
     const[loading, setLoading] = useState(false);
     const [brand, setBrand] = useState("");
     const[message,setMessage] = useState('');
-    const[cartId,setCartId] = useState();
-    const[restaurantId,setRestaurantId] = useState();
-    const[total,setTotal] =useState();
-    const userId = localStorage.getItem('userId');
+    const[total,setTotal] = useState();
+    //const[cartId,setCartId] = useState();
+    //const[restaurantId,setRestaurantId] = useState();
+    //const[total,setTotal] =useState();
+    //const userId = localStorage.getItem('userId');
     console.log(userId);
+    
+   console.log(restaurantId);
+   console.log(cartId);
+   //console.log(total);
+  
+   
     
 
     useEffect(()=>{
@@ -45,9 +53,6 @@ const CheckoutForm = ()=>{
 
 
         const res =await axios.get(`http://localhost:5500/api/cart/${userId}`);
-       
-        setCartId(res.data.cart._id);
-        setRestaurantId(res.data.cart.restaurantId);
         setTotal(res.data.cart.totalPrice);
       }
 
@@ -67,8 +72,8 @@ const CheckoutForm = ()=>{
 
 
 
-        //totalAmount = totalAmount * 293;
-        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : total , currency : "USD", userId : userId,cartId : cartId, restaurantId : restaurantId});
+        
+        const {data} = await axios.post('http://localhost:5300/api/Payment/createPaymentIntent', {amount : Math.round(total * 100) , currency : "USD", userId : userId,cartId : cartId, restaurantId : restaurantId});
         
     const result = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
@@ -271,11 +276,23 @@ const CheckoutForm = ()=>{
   );
 };
 
-const StripePayment = () => (
+const StripePayment = () => {
+  const location = useLocation();
+  const { customerId, cartId, restaurantId} = location.state || {};
+
+  return (
     <Elements stripe={stripePromise}>
-        <CheckoutForm/>
+      <CheckoutForm 
+        userId={customerId} 
+        cartId={cartId} 
+        restaurantId={restaurantId} 
+        
+        
+      />
     </Elements>
-);
+  );
+};
+
 
 
 export default StripePayment;
