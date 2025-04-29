@@ -25,12 +25,35 @@ const CartPage = () => {
       setCart(res.data.cart || { items: [], totalPrice: 0 });
       setError(null);
     } catch (err) {
-      setError('Failed to fetch cart data');
-      console.error(err);
+      if (err.response && err.response.status === 404) {
+        // Treat "cart not found" as an empty cart
+        setCart({ items: [], totalPrice: 0 });
+        setError(null); // clear any previous error
+      } else {
+        setError('Failed to fetch cart data');
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
   };
+  
+  const clearCart = async () => {
+    try {
+      setLoading(true);
+      await axios.delete('http://localhost:5500/api/cart/clear', {
+        data: { customerId },
+      });
+      setCart({ items: [], totalPrice: 0 }); // Reset UI state
+      navigate('/customer/dashboard'); // Redirect to dashboard
+    } catch (err) {
+      console.error('Failed to clear cart:', err);
+      alert('Failed to clear cart. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   useEffect(() => {
     fetchCartData();
@@ -104,9 +127,41 @@ const CartPage = () => {
   };
 
   // Handle checkout
-  const handleCheckout = () => {
-    navigate('/checkout', { state: { cart } });
-  };
+  const handleCheckout = async () => {
+    try {
+        setLoading(true);
+        
+        // First get the current cart data
+        const cartResponse = await axios.get(`http://localhost:5500/api/cart/${customerId}`);
+        const cart = cartResponse.data.cart;
+
+        if (!cart || cart.items.length === 0) {
+            alert('Your cart is empty');
+            return;
+        }
+
+        // Then proceed with checkout
+        const checkoutResponse = await axios.post('http://localhost:5500/api/cart/checkout', {
+            customerId
+        });
+        
+        // Navigate to payment page with ALL required data
+        navigate('/payment/checkout', { 
+            state: { 
+                ...checkoutResponse.data, // clientSecret, paymentIntentId, amount
+                customerId: customerId,
+                cartId: cart._id,
+                restaurantId: cart.restaurantId,
+                cartItems: cart.items // Include cart items if needed
+            } 
+        });
+    } catch (err) {
+        console.error('Checkout failed:', err);
+        alert('Failed to proceed to payment. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
 
   if (error) {
     return (
@@ -157,7 +212,7 @@ const CartPage = () => {
                   <h3 className="text-xl font-semibold text-[#103713] mb-2">Your cart is empty</h3>
                   <p className="text-gray-600 mb-6">Looks like you haven't added any items yet</p>
                   <button
-                    onClick={() => navigate('/customer/restaurants/approved')}
+                    onClick={() => navigate('/customer/restaurants')}
                     className="px-6 py-2 bg-[#628b35] text-white rounded-lg hover:bg-[#4a6b2a] transition-colors"
                   >
                     Browse Restaurants
@@ -223,7 +278,7 @@ const CartPage = () => {
 
                   <div className="mt-6 flex justify-between space-x-4">
                     <button
-                      onClick={() => navigate('/customer/restaurants/approved')}
+                      onClick={() => navigate('/customer/restaurants')}
                       className="flex-1 py-2 border border-[#103713] text-[#103713] rounded-lg hover:bg-gray-100 transition-colors"
                       disabled={loading}
                     >

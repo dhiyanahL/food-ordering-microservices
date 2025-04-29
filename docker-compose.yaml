@@ -54,7 +54,7 @@ services:
     - ./microservices/delivery-service/.env
 
     environment:
-      - MONGO_URI=MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/delivery_service?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/delivery_service?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
     
     depends_on:
