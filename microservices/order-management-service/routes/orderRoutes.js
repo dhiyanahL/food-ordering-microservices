@@ -14,7 +14,7 @@ router.get('/orders', getAllOrders);
 router.post('/create', createOrder);
 router.get('/:id', viewOrder);
 router.put('/:id/refund', processRefund);
-router.get('/history/', getOrderHistory);
+router.get('/history', getOrderHistory);
 //router.get('/orders', getAllOrders);
 router.put('/:id/status', updateOrderStatus);
 
