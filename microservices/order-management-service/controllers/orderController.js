@@ -81,42 +81,34 @@ const processRefund = async(req, res) => {
 //view order history
 const getOrderHistory = async (req, res) => {
     try {
-        const { customerId } = req.query;
-
-        if (!customerId) {
-            return res.status(400).json({ 
-                success: false,
-                message: "Customer ID is required" 
-            });
-        }
-
-        const orders = await Order.find({ customerId })
-            .sort({ createdAt: -1 })
-            .select('-__v'); // Exclude version key
-
-        if (!orders || orders.length === 0) {
-            return res.status(200).json({ 
-                success: true,
-                orders: [],
-                message: "No orders found for this customer"
-            });
-        }
-
-        res.status(200).json({ 
-            success: true,
-            orders,
-            count: orders.length
+      const { customerId } = req.query;
+  
+      if (!customerId) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Customer ID is required" 
         });
-
+      }
+  
+      const orders = await Order.find({ customerId })
+        .sort({ createdAt: -1 })
+        .lean();
+  
+      console.log(`Orders found for ${customerId}:`, orders); // Debug log
+  
+      res.status(200).json({ 
+        success: true,
+        orders, // Directly return the array
+      });
     } catch (error) {
-        console.error('Error in getOrderHistory:', error);
-        res.status(500).json({ 
-            success: false,
-            message: "Internal server error",
-            error: error.message 
-        });
+      console.error('Error in getOrderHistory:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Internal server error",
+        error: error.message 
+      });
     }
-};
+  };
 // update order status
 const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
