@@ -34,6 +34,7 @@ const CustomerDashboard = () => {
 
   const token = localStorage.getItem("token");
   const config = { headers: { Authorization: `Bearer ${token}` } };
+  const customerId = localStorage.getItem("userId");
 
   const fetchTrivia = async () => {
     try {
@@ -81,10 +82,10 @@ const CustomerDashboard = () => {
         console.log("Favorites data:", favRes.data);
 
         const orderRes = await axios.get(
-          "http://localhost:5500/api/order/history?limit=3",
+          `http://localhost:5500/api/orders/history?customerId=${customerId}&limit=3`,
           config
         );
-        setRecentOrders(orderRes.data);
+        setRecentOrders(orderRes.data.orders);
 
         const recRes = await axios.get(
           "http://localhost:5500/api/orders/recommendations",
@@ -190,19 +191,36 @@ const CustomerDashboard = () => {
 
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
-                  📋 Recent Orders
+                  📦 Recent Orders
                 </h2>
                 {recentOrders.length > 0 ? (
                   recentOrders.map((order) => (
-                    <p key={order._id}>
-                      {order.restaurantName} - {order.items.length} items
-                    </p>
+                    <div key={order._id} className="mb-2 border-b pb-2">
+                      <p className="text-sm">
+                        #{order._id.slice(-6)} —{" "}
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm font-medium">
+                        Total: ${order.totalPrice.toFixed(2)}
+                      </p>
+                      <p
+                        className={`text-xs ${
+                          order.status === "Delivered"
+                            ? "text-green-600"
+                            : order.status === "Canceled"
+                            ? "text-red-600"
+                            : "text-blue-600"
+                        }`}
+                      >
+                        {order.status}
+                      </p>
+                    </div>
                   ))
                 ) : (
-                  <p>No recent orders.</p>
+                  <p>No recent orders yet.</p>
                 )}
               </div>
-              
+
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
                   🚚 Track Your Delivery
