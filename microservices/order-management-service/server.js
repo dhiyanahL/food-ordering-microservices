@@ -12,6 +12,7 @@ const app = express();
 const corsOptions = {
   origin: 'http://localhost:5173', // Specify the frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow cookies if needed
 };
 
