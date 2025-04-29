@@ -9,7 +9,7 @@ const DeleteProfile = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete("/api/users/delete", {
+      await axios.delete("http://localhost:5000/api/user/delete", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

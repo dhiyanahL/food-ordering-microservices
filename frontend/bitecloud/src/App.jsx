@@ -38,7 +38,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/delete" element={<DeleteProfile />} />
+        
         <Route path="/edit" element={<EditProfile />} />
         <Route path="/profile" element={<ViewProfile />} />
 
@@ -46,6 +46,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["Customer"]} />}>
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/restaurants" element={<RestaurantList />} />
+          <Route path="/delete" element={<DeleteProfile />} />
           <Route path="/customer/restaurants/:restaurantId/menu"element={<MenuPage />}/>
           <Route path="/customer/orders" element={<OrderHistoryPage />} />
         </Route>
