@@ -58,18 +58,19 @@ export default function RestaurantDetailDashboard() {
         setMenuItems(res.data);
       });
 
-    axios
+      axios
       .get("http://localhost:5500/api/orders/orders")
       .then((res) => {
         const allOrders = res.data.orders || [];
         const restaurantOrders = allOrders.filter(
-          (order) => order.restaurantId === restaurantId
+          (order) => order.restaurantId?.toString() === restaurantId
         );
         setOrders(restaurantOrders);
       })
       .catch((err) => {
         console.error("Error fetching orders:", err);
       });
+    
   }, [restaurantId]);
 
   const handleChange = (e) => {
