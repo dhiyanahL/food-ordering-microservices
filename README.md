@@ -130,5 +130,12 @@ The entire system is containerized using **Docker**, with services orchestrated 
 - **Google OAuth integration**  
 - **Role-based access control**
 
+### 👩‍💻 Individual Contributions
 
+| Team Member | Services / Features Worked On                          |
+|:------------|:--------------------------------------------------------|
+| **Dhiyanah**  | User Management Service, Admin Management Service      |
+| **Yenuli**    | Restaurant Management Service, Admin Management Service|
+| **Dhanushi**  | Delivery Management Service, Order Management Service  |
+| **Sachini**   | Payment Service, Notification Service                  |
 
