@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Sidebar from "../components/Sidebar";
+import Sidebar from '../components/Sidebar';
 
 const OrderHistoryPage = () => {
   const [orders, setOrders] = useState([]);
@@ -16,130 +16,112 @@ const OrderHistoryPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        
         const customerId = localStorage.getItem('userId');
-        
-        if (!customerId) {
-          throw new Error('Please login to view your orders');
-        }
+        if (!customerId) throw new Error('Please log in to view your orders');
 
-        const response = await axios.get(`/api/orders/history`, {
-          params: { customerId },
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.data && Array.isArray(response.data.orders)) {
-          setOrders(response.data.orders);
-        } else {
-          setOrders([]);
-        }
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-        setError(error.response?.data?.message || error.message || 'Failed to load orders');
+        const response = await axios.get(`/api/orders/history?customerId=${customerId}`);
+        setOrders(response.data.orders || []);
+      } catch (err) {
+        setError(err.response?.data?.message || err.message || 'Failed to load orders');
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchOrders();
   }, []);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleOrderClick = (orderId) => {
     navigate(`/orders/${orderId}`);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-xl">Loading your orders...</div>
-      </div>
-    );
-  }
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-xl text-red-600">
-          Error: {error}
-          <button 
-            onClick={() => window.location.reload()}
-            className="ml-4 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Delivered': return 'bg-green-100 text-green-800';
+      case 'Canceled': return 'bg-red-100 text-red-800';
+      case 'Pending': return 'bg-yellow-100 text-yellow-800';
+      case 'Sent to Deliver': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header toggleSidebar={toggleSidebar} />
-      
       <div className="flex flex-1 overflow-hidden">
         <Sidebar role={userRole} isOpen={sidebarOpen} />
-        
-        <div className={`flex-grow transition-all duration-300 ease-in-out ${
-          sidebarOpen ? 'ml-56' : 'ml-0'
-        }`}>
+        <main className={`flex-grow transition-all duration-300 ${sidebarOpen ? 'ml-56' : 'ml-0'}`}>
           <div className="container mx-auto px-4 py-8">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-6 max-w-5xl mx-auto">
               <h2 className="text-2xl font-bold mb-6 text-gray-800">Your Order History</h2>
-              
-              {orders.length === 0 ? (
+
+              {loading ? (
+                <div className="text-center text-gray-500">Loading your orders...</div>
+              ) : error ? (
+                <div className="text-center text-red-500">
+                  {error}
+                  <button onClick={() => window.location.reload()} className="ml-4 bg-blue-600 text-white px-4 py-2 rounded">
+                    Try Again
+                  </button>
+                </div>
+              ) : orders.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="text-gray-500 text-lg mb-4">
-                    You haven't placed any orders yet
-                  </div>
-                  <button 
+                  <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
+                  <button
                     onClick={() => navigate('/customer/restaurants')}
-                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
                   >
                     Browse Restaurants
                   </button>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {orders.map(order => (
-                    <div 
+                  {orders.map((order) => (
+                    <div
                       key={order._id}
-                      className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                      className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition cursor-pointer"
                       onClick={() => handleOrderClick(order._id)}
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-semibold text-green-700">
+                          <h3 className="font-semibold text-lg text-green-700">
                             Order #{order._id.slice(-6).toUpperCase()}
                           </h3>
-                          <p className="text-sm text-gray-600">
-                            Placed on: {new Date(order.createdAt).toLocaleString()}
-                          </p>
+                          <p className="text-sm text-gray-600">Placed on: {formatDate(order.createdAt)}</p>
                           {order.restaurantName && (
-                            <p className="text-sm text-gray-600 mt-1">
-                              Restaurant: {order.restaurantName}
-                            </p>
+                            <p className="text-sm text-gray-600 mt-1">Restaurant: {order.restaurantName}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-800">
-                            ${order.totalPrice?.toFixed(2) || '0.00'}
-                          </p>
-                          <p className={`text-sm ${
-                            order.status === 'Delivered' ? 'text-green-600' : 
-                            order.status === 'Canceled' ? 'text-red-600' : 
-                            'text-blue-600'
-                          }`}>
+                          <p className="text-lg font-bold text-gray-800">${order.totalPrice.toFixed(2)}</p>
+                          <span className={`mt-1 inline-block px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(order.status)}`}>
                             {order.status}
-                          </p>
+                          </span>
                         </div>
+                      </div>
+
+                      <div className="mt-4 border-t pt-3">
+                        <h4 className="font-medium text-gray-900 mb-1">Items:</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          {order.items.map((item, idx) => (
+                            <li key={idx} className="flex justify-between">
+                              <span>{item.quantity} × {item.itemName}</span>
+                              <span>${(item.quantity * item.price).toFixed(2)}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
                   ))}
@@ -147,9 +129,8 @@ const OrderHistoryPage = () => {
               )}
             </div>
           </div>
-        </div>
+        </main>
       </div>
-
       <Footer />
     </div>
   );
