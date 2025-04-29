@@ -1,5 +1,3 @@
-
-
 services:
   mongo:
     image: mongo
@@ -15,6 +13,9 @@ services:
     ports:
       - '5000:5000'
 
+    volumes:
+    - ./microservices/user-management-service/backend:/app
+    - /app/node_modules
     env_file:
     - ./microservices/user-management-service/backend/.env
   
@@ -22,24 +23,11 @@ services:
       - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/users?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
       
-    depends_on:
-    - mongo
-
-  admin-service:
-    build: ./microservices/admin-service/backend
-    container_name: admin-service
-    ports:
-      - '5100:5100'
-
-    env_file:
-    - ./microservices/admin-service/backend/.env
-  
-    environment:
-      - MONGODB_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/admin-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
-      
+    command: npm run dev  
     depends_on:
     - mongo
     
+
   restaurant-management-service:
     build: ./microservices/restaurant-management-service/backend
     container_name: restaurant-management-service
@@ -66,7 +54,7 @@ services:
     - ./microservices/delivery-service/.env
 
     environment:
-      - MONGO_URI=MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/delivery_service?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/delivery_service?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
       - JWT_SECRET=DS_secret_jwt_key
     
     depends_on:
@@ -115,5 +103,20 @@ services:
     depends_on:
       - mongo
 
+  admin-service:
+    build: ./microservices/admin-service/backend
+    container_name: admin-service
+    ports:
+      - '5100:5100'
+    env_file:
+      - ./microservices/admin-service/backend/.env
+    environment:
+      - MONGO_URI=mongodb+srv://dbUser:GfQkn6g5yX0XYDBJ@ds-assignment-teamdb.ybkozh7.mongodb.net/admin-db?retryWrites=true&w=majority&appName=DS-Assignment-TeamDB
+      - JWT_SECRET=DS_secret_jwt_key
+    depends_on:
+      - mongo
+
 volumes:
   mongo_data:
+   
+ 

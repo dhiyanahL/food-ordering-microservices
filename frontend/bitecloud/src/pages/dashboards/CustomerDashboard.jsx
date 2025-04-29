@@ -49,7 +49,6 @@ const CustomerDashboard = () => {
           averageRating: userRes.data.averageRatingGiven,
         });
 
-       
         const favRes = await axios.get(
           "http://localhost:5000/api/user/favorites",
           config
@@ -63,10 +62,10 @@ const CustomerDashboard = () => {
         setRecentOrders(orderRes.data);
 
         const offersRes = await axios.get(
-          "http://localhost:5100/api/admin/available-offers?limit=3",
+          "http://localhost:5000/api/user/offers/top-5",
           config
         );
-        setOffers(offersRes.data);
+        setOffers(offersRes.data.offers || offersRes.data);
 
         const recRes = await axios.get(
           "http://localhost:5500/api/orders/recommendations",
@@ -119,13 +118,14 @@ const CustomerDashboard = () => {
   const { next, remaining, progress } = getNextTierInfo();
 
   return (
-    <div className="flex"
-    style={{
-      backgroundImage: `url('/images/bg.png')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-    }}
+    <div
+      className="flex"
+      style={{
+        backgroundImage: `url('/images/bg.png')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       <Sidebar role="Customer" isOpen={sidebarOpen} />
       <div className="flex-1 flex flex-col min-h-screen">
@@ -197,10 +197,19 @@ const CustomerDashboard = () => {
 
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
-                  🎁 Offers & Rewards
+                  🎁 Ongoing Offers
                 </h2>
                 {offers.length > 0 ? (
-                  offers.map((offer) => <p key={offer._id}>{offer.title}</p>)
+                  offers.map((offer) => (
+                    <div key={offer._id} className="mb-2">
+                      <h3 className="font-semibold text-[#628B35]">
+                        {offer.title}
+                      </h3>
+                      <p className="text-sm text-[#6F4D38]">
+                        {offer.description}
+                      </p>
+                    </div>
+                  ))
                 ) : (
                   <p>No active offers.</p>
                 )}
@@ -245,7 +254,7 @@ const CustomerDashboard = () => {
           </div>
         </main>
 
-       <Footer />
+        <Footer />
       </div>
     </div>
   );

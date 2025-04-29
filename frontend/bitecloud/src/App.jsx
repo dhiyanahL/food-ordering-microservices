@@ -59,17 +59,17 @@ function App() {
         {/* Dashboards for admin role */}
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path="/admin/add-offer" element={<AddOfferForm />} />
-          <Route path="/admin/available-offers" element={<AvailableOffers />} />
+          
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/manage-restaurants" element={<ManageRestaurants/>}/>
         </Route>
+        <Route path="/admin/available-offers" element={<AvailableOffers />} />
         
           {/* Cart and Checkout */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
-        <Route path="/order-history" element={<OrderHistoryPage />} />
 
         <Route path = "/payment/checkout" element = {<StripePayment/>}/>
         <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
