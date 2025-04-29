@@ -24,6 +24,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import DeliveryTrackerPage from "./pages/DeliveryTrackerPage";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import ManageRestaurants from "./pages/dashboards/SystemAdminMngRestaurants";
+import AuthSuccess from "./components/AuthSuccess";
 
 //{/* Dashboards for each user role */}
 //<Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -38,42 +39,54 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<RegisterForm />} />
-        
+        <Route path="/auth-success" element={<AuthSuccess />} />
         <Route path="/edit" element={<EditProfile />} />
         <Route path="/profile" element={<ViewProfile />} />
-
-        {/* Customer Allowed Routes */}
-        <Route element={<ProtectedRoute allowedRoles={["Customer"]} />}>
-          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+        <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/restaurants" element={<RestaurantList />} />
           <Route path="/delete" element={<DeleteProfile />} />
           <Route path="/customer/restaurants/:restaurantId/menu"element={<MenuPage />}/>
           <Route path="/customer/orders" element={<OrderHistoryPage />} />
-        </Route>
+        
 
         {/* Restaurant Admin Allowed Routes */}
         <Route element={<ProtectedRoute allowedRoles={["RestaurantAdmin"]} />}>
-          <Route path="/restaurant/dashboard"element={<RestaurantAdminDashboard />}/>
-          <Route path="/restaurant/dashboard/:restaurantId"element={<RestaurantDetailDashboard />}/>
+          <Route
+            path="/restaurant/dashboard"
+            element={<RestaurantAdminDashboard />}
+          />
+          <Route
+            path="/restaurant/dashboard/:restaurantId"
+            element={<RestaurantDetailDashboard />}
+          />
         </Route>
 
         {/* Dashboards for admin role */}
         <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route path="/admin/add-offer" element={<AddOfferForm />} />
-          
+
           <Route path="/admin/edit-offer/:id" element={<EditOfferForm />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/manage-restaurants" element={<ManageRestaurants/>}/>
+          <Route
+            path="/admin/manage-restaurants"
+            element={<ManageRestaurants />}
+          />
         </Route>
         <Route path="/admin/available-offers" element={<AvailableOffers />} />
-        
-          {/* Cart and Checkout */}
+
+        {/* Cart and Checkout */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/delivery-tracker/:orderId" element={<DeliveryTrackerPage />} />
+        <Route
+          path="/delivery-tracker/:orderId"
+          element={<DeliveryTrackerPage />}
+        />
 
-        <Route path = "/payment/checkout" element = {<StripePayment/>}/>
-        <Route path="/notification/viewNotification" element = {<NotificationComponent/>}/>
+        <Route path="/payment/checkout" element={<StripePayment />} />
+        <Route
+          path="/notification/viewNotification"
+          element={<NotificationComponent />}
+        />
       </Routes>
       <ToastContainer autoClose={1500} />
     </Router>

@@ -49,12 +49,13 @@ const loginUser = async (req, res) => {
 
 const googleCallback = (req, res) => {
   const token = generateToken(req.user);
-  res.redirect(`/auth-success?token=${token}`);
+  
+  res.redirect(`http://localhost:5173/auth-success?token=${token}`);
 };
 
 const facebookCallback = (req, res) => {
   const token = generateToken(req.user);
-  res.redirect(`/auth-success?token=${token}`);
+  res.redirect(`http://localhost:5173/auth-success?token=${token}`);
 };
 
 const logoutUser = (req, res) => {

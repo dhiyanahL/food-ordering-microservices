@@ -39,9 +39,8 @@ const CustomerDashboard = () => {
   const fetchTrivia = async () => {
     try {
       const triviaRes = await axios
-        .get
-        // `https://api.spoonacular.com/food/trivia/random?apiKey=ce18f24092a1475e8bcc307ef659c27c`
-        ();
+        .get(`https://api.spoonacular.com/food/trivia/random?apiKey=7016289a4bbd47f79b01674cc655b6fb`);
+        
       setTrivia(triviaRes.data.text);
     } catch (err) {
       console.error("Error fetching trivia:", err);
