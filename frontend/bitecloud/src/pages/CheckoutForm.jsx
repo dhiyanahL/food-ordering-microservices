@@ -6,6 +6,9 @@ import {Elements,CardElement,useStripe,useElements,  CardNumberElement,
   CardExpiryElement,
   CardCvcElement,} from '@stripe/react-stripe-js';
 import axios from 'axios';
+import Footer from "../components/Footer";
+import { useNavigate } from 'react-router-dom';
+
 
 const stripePromise = loadStripe('pk_test_51R7BxcCBxogx844uoIAybAnwKxST2s0masN22BgkqMpLjD5RkqIHDYIwDT2QedEN7gZZrQA9fI0hsGCtI6vnxdwu00SK0KxCx4');
 
@@ -34,6 +37,8 @@ const CheckoutForm = ({userId,cartId,restaurantId})=>{
     const [brand, setBrand] = useState("");
     const[message,setMessage] = useState('');
     const[total,setTotal] = useState();
+    const navigate = useNavigate();
+
     //const[cartId,setCartId] = useState();
     //const[restaurantId,setRestaurantId] = useState();
     //const[total,setTotal] =useState();
@@ -139,6 +144,18 @@ const CheckoutForm = ({userId,cartId,restaurantId})=>{
 
     
   return (
+
+    <div
+
+    className="flex min-h-screen flex-col"
+      style={{
+        backgroundImage: `url('/images/bg.png')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    
+    >
     <form
     onSubmit={handleSubmit}
    className="w-[580px] mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl border border-gray-200"
@@ -213,7 +230,7 @@ const CheckoutForm = ({userId,cartId,restaurantId})=>{
     border: 'none',
   }}
 >
-  {loading ? 'Processing...' : `Pay ${total}`}
+  {loading ? 'Processing...' : `Pay ${total} USD`}
 </button>
 
 
@@ -225,53 +242,75 @@ const CheckoutForm = ({userId,cartId,restaurantId})=>{
       left: 0,
       height: "100vh",
       width: "100vw",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      backgroundColor: "rgba(0, 0, 0, 0.6)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       zIndex: 9999,
+      backdropFilter: "blur(3px)",
     }}
   >
     <div
       style={{
-        backgroundColor: "white",
-        padding: "30px",
-        borderRadius: "12px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+        backgroundColor: "#ffffff",
+        padding: "40px 32px",
+        borderRadius: "16px",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
         textAlign: "center",
-        maxWidth: "400px",
+        maxWidth: "420px",
         width: "90%",
       }}
     >
-      <p
-        style={{
-          color: message.includes("successful") ? "#16a34a" : "#dc2626",
-          fontSize: "16px",
-          marginBottom: "20px",
-        }}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="#16a34a"
+        className="mx-auto mb-4"
+        style={{ height: "60px", width: "60px" }}
       >
-        {message}
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4.5 12.75l6 6 9-13.5"
+        />
+      </svg>
+      <h3 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "12px", color: "#111827" }}>
+        Payment Successful
+      </h3>
+      <p style={{ fontSize: "16px", color: "#4b5563", marginBottom: "24px" }}>
+        Your payment has been processed successfully. A confirmation will be sent to your email.
       </p>
       <button
-        onClick={() => setMessage("")}
+        onClick={() => {
+          setMessage("");
+          navigate("/customer/dashboard");
+        }}
         style={{
           backgroundColor: "#16a34a",
           color: "white",
-          padding: "10px 20px",
+          padding: "12px 24px",
           borderRadius: "8px",
           border: "none",
-          fontWeight: "bold",
+          fontWeight: "600",
+          fontSize: "15px",
           cursor: "pointer",
         }}
       >
-        Okay
+        Close
       </button>
     </div>
   </div>
 )}
 
 
+
   </form>
+
+  <Footer />
+  </div>
+  
   
   );
 };
