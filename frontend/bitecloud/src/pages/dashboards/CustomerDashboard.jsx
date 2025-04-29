@@ -221,13 +221,16 @@ const CustomerDashboard = () => {
                 )}
               </div>
 
+              {/* TRACK DELIVERY LINK GOES INSIDE HERE*/}
+
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
                   🚚 Track Your Delivery
                 </h2>
-
+                
+                {/*ADD THE CORRECT LINK HERE*/}
                 <button
-                  onClick={() => navigate("/track-delivery/yourOrderIdHere")}
+                  onClick={() => navigate("/track-delivery/yourOrderIdHere")} 
                   className="bg-darkGreen text-[#FFFDF5] px-4 py-2 rounded-lg mt-4 w-full hover:bg-oliveGreen transition duration-300"
                 >
                   Track Delivery
