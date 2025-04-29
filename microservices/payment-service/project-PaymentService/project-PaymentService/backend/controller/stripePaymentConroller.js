@@ -188,16 +188,20 @@ exports.createPaymentIntent = async(req , res)=>{
           message: message,
         }),
 
-       /* axios.post('http://order-service:5500/api/cart/checkout',{
+        await axios.post('http://order-service:5500/api/orders/create',{
+
+          customerId : userId,
+          customerName : user.name
+        }
+
+
+        ),
+
+        await axios.post('http://order-service:5500/api/cart/clear',{
 
           customerId : userId
-        }),*/
 
-        /*axios.delete('http://order-service:5500/api/cart/clear',{
-
-          customerId : userId
-
-        })*/
+        })
       ]);
     
       console.log('Notification sent to user after payment success.');

@@ -41,7 +41,7 @@ const CartPage = () => {
   const clearCart = async () => {
     try {
       setLoading(true);
-      await axios.delete('http://localhost:5500/api/cart/clear', {
+      await axios.post('http://localhost:5500/api/cart/clear', {
         data: { customerId },
       });
       setCart({ items: [], totalPrice: 0 }); // Reset UI state

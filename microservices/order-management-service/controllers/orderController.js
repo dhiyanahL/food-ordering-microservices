@@ -14,7 +14,7 @@ const createOrder = async (req, res) => {
 
         const newOrder = new Order({
             customerId: cart.customerId,
-            customerName: customeName || cart.customerName,
+            customerName: customerName || cart.customerName,
             restaurantId: cart.restaurantId,
             currencyCode: cart.currencyCode,
             items: cart.items,
