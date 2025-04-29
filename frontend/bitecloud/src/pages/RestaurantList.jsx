@@ -101,12 +101,12 @@ export default function RestaurantList  () {
   };
   
 
-  const handleAddFavorite = async (restaurantId) => {
+  const handleAddFavorite = async (restaurantId, restaurantName) => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/user/favorites",
-        { restaurantId},
+        "http://localhost:5000/api/user/favorites/add",
+        { restaurantId, restaurantName},
         {
           headers: {
             Authorization: `Bearer ${token}`,

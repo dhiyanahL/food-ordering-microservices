@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar";
 import Footer from "../../components/Footer";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const CustomerDashboard = () => {
   const [user, setUser] = useState({
@@ -26,9 +26,10 @@ const CustomerDashboard = () => {
 
   const fetchTrivia = async () => {
     try {
-      const triviaRes = await axios.get(
-       // `https://api.spoonacular.com/food/trivia/random?apiKey=ce18f24092a1475e8bcc307ef659c27c`
-      );
+      const triviaRes = await axios
+        .get
+        // `https://api.spoonacular.com/food/trivia/random?apiKey=ce18f24092a1475e8bcc307ef659c27c`
+        ();
       setTrivia(triviaRes.data.text);
     } catch (err) {
       console.error("Error fetching trivia:", err);
@@ -59,6 +60,7 @@ const CustomerDashboard = () => {
         console.log("Offers data:", offersRes.data);
         setOffers(offersRes.data.offers);
 
+        //FAVORITES LOGIC
         console.log("Fetching favorites...");
         const favRes = await axios.get(
           "http://localhost:5000/api/user/favorites",
@@ -66,7 +68,6 @@ const CustomerDashboard = () => {
         );
         setFavorites(favRes.data);
         console.log("Favorites data:", favRes.data);
-
 
         const orderRes = await axios.get(
           "http://localhost:5500/api/order/history?limit=3",
@@ -229,22 +230,25 @@ const CustomerDashboard = () => {
 
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
-                  ❤️ Your Favourites
+                  ❤️Your Favorites
                 </h2>
-                {console.log("Rendering favorites:", favorites)} {/* Debug line */}
-
-                {favorites.length > 0 ? (
-                  favorites.map((fav) => (
-                    <a
-                      key={fav._id}
-                      href={`/customer/restaurants/${fav._id}/menu`}
-                      className="block text-blue-600 hover:underline mb-1"
-                    >
-                      🍽️ {fav.name}
-                    </a>
-                  ))
+                {favorites.length === 0 ? (
+                  <p className="text-slateGray">
+                    You haven't favorited any restaurants yet.
+                  </p>
                 ) : (
-                  <p className="text-gray-600">No favorites added yet.</p>
+                  <ul>
+                    {favorites.map((fav) => (
+                      <a
+                        key={fav.restaurantId}
+                        href={`/customer/restaurants/${fav.restaurantId}/menu`}
+                        className="block text-darkGreen text-xl hover:underline mb-1"
+                      >
+                        <p className="font-bold"> 🍽️{fav.restaurantName}</p>
+                        
+                      </a>
+                    ))}
+                  </ul>
                 )}
               </div>
 

@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
+const { authMiddleware } = require("../middleware/authMiddleware");
 
 // Get all users
 exports.getUsers = async (req, res) => {
@@ -102,7 +103,7 @@ exports.deleteUser = async (req, res) => {
 };
 
 
-exports.addFavorite = async (req, res) => {
+/*exports.addFavorite = async (req, res) => {
   const { restaurantId } = req.body;
   const userId = req.user.id;
 
@@ -122,10 +123,10 @@ exports.addFavorite = async (req, res) => {
     console.error('Error adding to favorites:', error);
     res.status(500).json({ message: 'Server error' });
   }
-};
+};*/
 
 
-
+/*
 // Get Favorites// Get Favorites
 exports.getFavorites = async (req, res) => {
   const userId = req.user.id;
@@ -139,7 +140,9 @@ exports.getFavorites = async (req, res) => {
     console.error('Error fetching favorites:', error);
     res.status(500).json({ message: 'Server error' });
   }
-};
+};*/
+
+
 
 
 exports.fetchUser = async (req, res) => {
