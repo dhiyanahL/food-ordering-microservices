@@ -80,26 +80,43 @@ const processRefund = async(req, res) => {
 
 //view order history
 const getOrderHistory = async (req, res) => {
-    const { customerId } = req.query; // read from query params
-
-    if (!customerId) {
-        return res.status(400).json({ message: "Customer ID is required" });
-    }
-
     try {
-        const orders = await Order.find({ customerId }).sort({ createdAt: -1 });
+        const { customerId } = req.query;
 
-        if (!orders || orders.length === 0) {
-            return res.status(404).json({ message: "No orders found" });
+        if (!customerId) {
+            return res.status(400).json({ 
+                success: false,
+                message: "Customer ID is required" 
+            });
         }
 
-        res.status(200).json({ message: "Order history retrieved successfully", orders });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
+        const orders = await Order.find({ customerId })
+            .sort({ createdAt: -1 })
+            .select('-__v'); // Exclude version key
+
+        if (!orders || orders.length === 0) {
+            return res.status(200).json({ 
+                success: true,
+                orders: [],
+                message: "No orders found for this customer"
+            });
+        }
+
+        res.status(200).json({ 
+            success: true,
+            orders,
+            count: orders.length
+        });
+
+    } catch (error) {
+        console.error('Error in getOrderHistory:', error);
+        res.status(500).json({ 
+            success: false,
+            message: "Internal server error",
+            error: error.message 
+        });
     }
 };
-
 // update order status
 const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
