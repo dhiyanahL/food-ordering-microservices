@@ -8,6 +8,7 @@ const {
   //addFavorite,
   //getFavorites,
   fetchUser,
+  updateStripeCustomerId,
   getUserCountsByRole
 } = require("../controllers/userController");
 const {
@@ -81,5 +82,6 @@ router.get("/getusercountsbyrole",authMiddleware, getUserCountsByRole);
 
 //Fetch By Payment Gateway
 router.get('/fetchUser/:id',fetchUser);
+router.put('/updateStripeCustomerId/:id',updateStripeCustomerId);
 
 module.exports = router;

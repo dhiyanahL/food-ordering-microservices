@@ -14,7 +14,7 @@ const createOrder = async (req, res) => {
 
         const newOrder = new Order({
             customerId: cart.customerId,
-            customerName: customeName || cart.customerName,
+            customerName: customerName || cart.customerName,
             restaurantId: cart.restaurantId,
             currencyCode: cart.currencyCode,
             items: cart.items,
@@ -102,7 +102,7 @@ const getOrderHistory = async (req, res) => {
 
 // update order status
 const updateOrderStatus = async (req, res) => {
-    const { orderId } = req.params;
+    const { id } = req.params;
     const { status } = req.body;
 
     const allowedStatuses = ['Pending', 'Completed', 'Preparing', 'Sent to Deliver', 'Delivered', 'Canceled'];
@@ -112,7 +112,7 @@ const updateOrderStatus = async (req, res) => {
     }
 
     try {
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(id);
 
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
@@ -134,7 +134,7 @@ const getAllOrders = async (req, res) => {
     try {
         // Fetch all orders from the database
         const orders = await Order.find().sort({ createdAt: -1 }); // Optionally, sort by creation date
-
+        console.log("Orders Fetched:", orders);
         if (!orders || orders.length === 0) {
             return res.status(404).json({ message: "No orders found" });
         }

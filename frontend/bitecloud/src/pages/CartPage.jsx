@@ -41,7 +41,7 @@ const CartPage = () => {
   const clearCart = async () => {
     try {
       setLoading(true);
-      await axios.delete('http://localhost:5500/api/cart/clear', {
+      await axios.post('http://localhost:5500/api/cart/clear', {
         data: { customerId },
       });
       setCart({ items: [], totalPrice: 0 }); // Reset UI state
@@ -134,6 +134,7 @@ const CartPage = () => {
         // First get the current cart data
         const cartResponse = await axios.get(`http://localhost:5500/api/cart/${customerId}`);
         const cart = cartResponse.data.cart;
+        
 
         if (!cart || cart.items.length === 0) {
             alert('Your cart is empty');
@@ -141,18 +142,19 @@ const CartPage = () => {
         }
 
         // Then proceed with checkout
-        const checkoutResponse = await axios.post('http://localhost:5500/api/cart/checkout', {
-            customerId
-        });
+        //const checkoutResponse = await axios.post('http://localhost:5500/api/cart/checkout', {
+          //  customerId
+       // });
         
         // Navigate to payment page with ALL required data
         navigate('/payment/checkout', { 
             state: { 
-                ...checkoutResponse.data, // clientSecret, paymentIntentId, amount
+              
                 customerId: customerId,
                 cartId: cart._id,
                 restaurantId: cart.restaurantId,
-                cartItems: cart.items // Include cart items if needed
+                
+
             } 
         });
     } catch (err) {

@@ -67,6 +67,11 @@ exports.createPaymentIntent = async(req , res)=>{
 
 
             stripeCustomerId = customer.id;
+
+            await axios.put(`http://user-management-service:5000/api/user/updateStripeCustomerId/${userId}`,{
+
+              stripeCustomerId : stripeCustomerId
+            })
             
             /*await user.updateOne(
               { _id: userId },
@@ -130,18 +135,22 @@ exports.createPaymentIntent = async(req , res)=>{
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
+    console.log(paymentIntent);
+
     const payment = new Payment({
       paymentId: paymentIntentId,
       paymentDate: new Date(paymentIntent.created * 1000),
       amount: paymentIntent.amount,
-      paymentMethod: paymentIntent.payment_method_types,
+      paymentMethod: paymentIntent.payment_method,
       stripeCustomerId: paymentIntent.customer,
-      userId,
-      restaurantId,
-      cartId,
+      userId : userId,
+      restaurantId : restaurantId,
+      cartId : cartId,
       paymentStatus: paymentIntent.status
     });
 
+    const saved = await payment.save();
+    console.log("Saved payment:", saved);
     if (paymentIntent.status === "failed") {
 
       const amount = (paymentIntent.amount / 100).toFixed(2); // nice format like 12.00
@@ -179,12 +188,16 @@ exports.createPaymentIntent = async(req , res)=>{
           message: message,
         }),
 
-        axios.post('http://order-service:5500/api/cart/checkout',{
+        await axios.post('http://order-service:5500/api/orders/create',{
 
-          customerId : userId
-        }),
+          customerId : userId,
+          customerName : user.name
+        }
 
-        axios.delete('http://order-service:5500/api/cart/clear',{
+
+        ),
+
+        await axios.post('http://order-service:5500/api/cart/clear',{
 
           customerId : userId
 
@@ -192,6 +205,7 @@ exports.createPaymentIntent = async(req , res)=>{
       ]);
     
       console.log('Notification sent to user after payment success.');
+
     
       // Call the Create Order Controller method
       // Call the create Notification method for confirming the order to show in notification list in the app
@@ -205,8 +219,7 @@ exports.createPaymentIntent = async(req , res)=>{
     
    
 
-    const saved = await payment.save();
-    //console.log(saved.amount);
+
     
   
    
