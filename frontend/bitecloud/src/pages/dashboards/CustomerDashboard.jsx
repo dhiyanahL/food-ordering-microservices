@@ -6,6 +6,17 @@ import Sidebar from "../../components/Sidebar";
 import Footer from "../../components/Footer";
 import { Link } from "react-router-dom";
 
+/*<div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
+                <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
+                  ⭐ Recommended
+                </h2>
+                {recommendations.length > 0 ? (
+                  recommendations.map((rec) => <p key={rec._id}>{rec.name}</p>)
+                ) : (
+                  <p>No recommendations yet.</p>
+                )}
+              </div>*/
+
 const CustomerDashboard = () => {
   const [user, setUser] = useState({
     name: "",
@@ -191,16 +202,18 @@ const CustomerDashboard = () => {
                   <p>No recent orders.</p>
                 )}
               </div>
-
+              
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
                 <h2 className="font-bold text-xl mb-2 font-[Kalnia] text-center">
-                  ⭐ Recommended
+                  🚚 Track Your Delivery
                 </h2>
-                {recommendations.length > 0 ? (
-                  recommendations.map((rec) => <p key={rec._id}>{rec.name}</p>)
-                ) : (
-                  <p>No recommendations yet.</p>
-                )}
+
+                <button
+                  onClick={() => navigate("/track-delivery/yourOrderIdHere")}
+                  className="bg-darkGreen text-[#FFFDF5] px-4 py-2 rounded-lg mt-4 w-full hover:bg-oliveGreen transition duration-300"
+                >
+                  Track Delivery
+                </button>
               </div>
 
               <div className="bg-[#F2EBE3] rounded-xl p-4 shadow border-4 border-darkGreen">
@@ -242,10 +255,9 @@ const CustomerDashboard = () => {
                       <a
                         key={fav.restaurantId}
                         href={`/customer/restaurants/${fav.restaurantId}/menu`}
-                        className="block text-darkGreen text-xl hover:underline mb-1"
+                        className="block text-darkGreen text-xl hover:underline mb-1  bg-white rounded-lg shadow-sm p-3"
                       >
-                        <p className="font-bold"> 🍽️{fav.restaurantName}</p>
-                        
+                        <p className="font-bold"> 🍽️ {fav.restaurantName}</p>
                       </a>
                     ))}
                   </ul>
