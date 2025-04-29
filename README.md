@@ -68,7 +68,7 @@ The entire system is containerized using **Docker**, with services orchestrated 
 1. **Clone the repository:**
 
    ```bash
-   git clone [repository-link]
+   git clone https://github.com/dhiyanahL/food-ordering-microservices.git
    cd BiteCloud
    ```
 
