@@ -23,7 +23,6 @@ const admin = (req, res, next) => {
     throw new Error("Not authorized as an admin");
   }
 };
-//ADD AUTHENTICATIONS FOR RES ADMIN + DELIVERY ROUTES
 
 // RestaurantAdmin middleware
 const restaurantAdmin = (req, res, next) => {

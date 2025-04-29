@@ -86,10 +86,10 @@ const CustomerDashboard = () => {
         );
         setRecentOrders(orderRes.data.orders);
 
-        const recRes = await axios.get(
-          "http://localhost:5500/api/orders/recommendations",
-          config
-        );
+        //const recRes = await axios.get(
+        //  "http://localhost:5500/api/orders/recommendations",
+        //  config
+        //);
         setRecommendations(recRes.data);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);

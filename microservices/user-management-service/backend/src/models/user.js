@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     googleId: String,
     facebookId: String,
     address: { type: String },
-    phoneNumber: { type: String, required: true },
+    phoneNumber: { type: String },
     loyaltyPoints: {
       type: Number,
       default: 0,

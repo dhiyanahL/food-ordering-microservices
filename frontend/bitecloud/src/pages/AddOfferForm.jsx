@@ -62,7 +62,7 @@ export default function AddOfferForm() {
     <div
       className="flex min-h-screen font-sans"
       style={{
-        backgroundImage: `url('/images/bg.jpg')`,
+        backgroundImage: `url('/images/bg.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
